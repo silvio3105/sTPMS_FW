@@ -1,0 +1,40 @@
+{
+    "configurations": [
+        {
+            "name": "HW_Template",
+            "includePath": [
+				"${workspaceFolder}/Hardware/HW_Template/**",
+				"${workspaceFolder}/Hardware/HW_Template/Inc/**",
+                "${workspaceFolder}/Application/Inc/**",
+				"${workspaceFolder}/CMSIS/**",
+				"${workspaceFolder}/Config/**",
+				"${workspaceFolder}/Drivers/Inc/**",
+				"${workspaceFolder}/Libraries/Inc/**",
+				"${workspaceFolder}/Modules/Inc/**",
+				"${workspaceFolder}/RTOS/RTX/Inc/**"
+            ],
+            "defines": [
+				"BUILD_Build_Template",
+				"HW_HW_Template",
+				"STM32F103x8",
+				"USING_RTOS",
+				"DEBUG",
+				"DEBUG_VERBOSE",
+				"DEBUG_INFO",
+				"DEBUG_ERROR"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "${env:ARM-GCC}/arm-none-eabi-gcc.exe",
+            "compilerArgs": [
+                "-mcpu=cortex-m3",
+                "-mthumb"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}

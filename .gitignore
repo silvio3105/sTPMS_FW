@@ -1,0 +1,10 @@
+.builds/*/*
+!.builds/.gitkeep
+.releases/*
+.releases/*/*
+!.releases/RC/.gitkeep
+.jlink/*.*
+!.jlink/.gitkeep
+.outputs/*.*
+!.outputs/.gitkeep
+*.cortex-*.json
