@@ -27,7 +27,7 @@
 
 // ----- INCLUDE FILES
 #include			"AppConfig.hpp"
-#include 			"HW_Template.hpp"
+#include 			"TPMS1.hpp"
 
 #include			<stdint.h>
 

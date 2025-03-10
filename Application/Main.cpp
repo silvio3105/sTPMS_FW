@@ -25,6 +25,7 @@
 // ----- INCLUDE FILES
 #include			"Main.hpp"
 #include			"SEGGER_RTT.h"
+#include			"sDebug.hpp"
 
 #ifdef USING_RTOS
 #include			"cmsis_os2.h"
@@ -33,6 +34,12 @@
 #include			<stdint.h>
 #include 			<stdio.h>
 #include			<string.h>
+
+
+// ----- DEBUG
+DEBUG_ENABLE_VERBOSE();
+DEBUG_ENABLE_INFO();
+DEBUG_ENABLE_ERROR();
 
 
 // ----- DEFINES
@@ -62,10 +69,17 @@
 // ----- FUNCTION DEFINITIONS
 int main(void)
 {
+	_PRINT("Test\n");
+
 	while (1)
 	{
 		
 	}
+}
+
+void sDebug::out(const char* string, const uint16_t len)
+{
+	SEGGER_RTT_Write(0, string, len);
 }
 
 
