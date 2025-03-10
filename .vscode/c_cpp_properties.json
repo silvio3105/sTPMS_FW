@@ -1,23 +1,25 @@
 {
     "configurations": [
         {
-            "name": "HW_Template",
+            "name": "sTPMS FW RC",
             "includePath": [
-				"${workspaceFolder}/Hardware/HW_Template/**",
-				"${workspaceFolder}/Hardware/HW_Template/Inc/**",
+				"${workspaceFolder}/Hardware/TPMS1/**",
+				"${workspaceFolder}/Hardware/TPMS1/Inc/**",
                 "${workspaceFolder}/Application/Inc/**",
 				"${workspaceFolder}/CMSIS/**",
 				"${workspaceFolder}/Config/**",
 				"${workspaceFolder}/Drivers/Inc/**",
 				"${workspaceFolder}/Libraries/Inc/**",
 				"${workspaceFolder}/Modules/Inc/**",
-				"${workspaceFolder}/RTOS/RTX/Inc/**"
             ],
             "defines": [
-				"BUILD_Build_Template",
-				"HW_HW_Template",
-				"STM32F103x8",
-				"USING_RTOS",
+				"BUILD_sTPMS_FW_RC",
+				"HW_sTPMS1",
+				"NRF52832_XXAA",
+				"SOFTDEVICE_PRESENT",
+				"S132",
+				"NRF_SD_BLE_API_VERSION=7",
+				"NRF_BLE_GATT_ENABLED",
 				"DEBUG",
 				"DEBUG_VERBOSE",
 				"DEBUG_INFO",

@@ -5,10 +5,10 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Build_Template",
-			"executable": ".builds/Build_Template/Build_Template.elf",
-			"device": "STM32F103C8",
-			"svdFile": "Hardware/HW_Template/SVD/STM32F103.svd",
+			"name": "TPMS_FW_RC",
+			"executable": ".builds/TPMS_FW_RC/TPMS_FW_RC.elf",
+			"device": "nRF52832_xxAA",
+			"svdFile": "Hardware/TPMS1/SVD/nrf52.svd",
 			"breakAfterReset": true,
 			"type": "cortex-debug",
 			"request": "launch",
