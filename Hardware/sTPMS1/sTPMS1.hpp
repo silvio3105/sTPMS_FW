@@ -1,7 +1,7 @@
 /**
- * @file HW_Template.hpp
+ * @file sTPMS1.hpp
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief Hardware configuration header file.
+ * @brief sTPMS1 hardware configuration header file.
  * 
  * @copyright Copyright (c) 2025, silvio3105
  * 
@@ -22,12 +22,23 @@
 	This License shall be included in all functional textual files.
 */
 
-#ifndef _HW_TEMPLATE_HPP
-#define _HW_TEMPLATE_HPP
+#ifndef _sTPMS1_HPP_
+#define _sTPMS1_HPP_
+
+// ----- INCLUDE FILES
+
+/**
+ * @addtogroup sTPMS1_HW
+ * 
+ * sTPMS1 Hardware-related config.
+ * @{
+ */
 
 // ----- DEFINES
 
 
-#endif // _HW_TEMPLATE_HPP
+/** @} */
+
+#endif // _sTPMS1_HPP_
 
 // END WITH NEW LINE

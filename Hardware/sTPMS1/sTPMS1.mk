@@ -4,16 +4,16 @@
 ######################################
 
 # COMPILER DEFINES FOR MCU
-MCU_DEFINE = STM32F103xB
+MCU_DEFINE = NRF52832_XXAA
 
 # MCU CORE
-MCU_CORE = cortex-m3
+MCU_CORE = cortex-m4
 
 # NAME OF MCU LINKER SCRIPT FILE
-MCU_LINKER = STM32F103XB_FLASH.ld
+MCU_LINKER = nrf52832_xxaa
 
 # NAME OF MCU STARTUP FILE
-MCU_STARTUP = startup_stm32f103xb.s
+MCU_STARTUP = startup_nrf52.S
 
 # MCU CORE ARTICHETURE
 MCU_ARCH = armv7-m
@@ -22,7 +22,7 @@ MCU_ARCH = armv7-m
 MCU_BIG_ENDIAN = 0
 
 # MCU FLOAT ABI (leave empty for no float ABI instruction ; "soft" software floating-point ; "softfp" hardware floating-point but software conversions ; "hard" hardware floating-point)
-MCU_FLOAT = soft
+MCU_FLOAT = hard
 
 
 ######################################
@@ -30,7 +30,7 @@ MCU_FLOAT = soft
 ######################################
 
 # RTOS SYSTEM FILE NAME
-RTOS_SYS = stm32f103xb.h
+RTOS_SYS = nrf.h
 
 # RTOS IRQ FILE NAME
 RTOS_IRQ = irq_armv7m.s
@@ -44,13 +44,13 @@ RTOS_CFG = RTOS/RTX/Inc/RTX_Config.h
 ######################################
 
 # RTOS SYSTEM FILE
-JLINK_DEVICE = STM32F103C8
+JLINK_DEVICE = nRF52832_xxAA
 
 # J-LINK START ADDRESS
-JLINK_ADDR_START = 0x08000000
+JLINK_ADDR_START = 0x26000
 
 # J-LINK END ADDRESS
-JLINK_ADDR_END = 0x08001000
+JLINK_ADDR_END = 0x30000
 
 # J-LINK SWD SPEED IN kHz
 JLINK_SPEED = 4000
@@ -65,23 +65,8 @@ HW_CPP_FILES = \
 
 # C TRANSLATION FILES
 HW_C_FILES = \
-$(DIR_HARDWARE)/Src/system_stm32f1xx.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_gpio_ex.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_tim.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_tim_ex.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_uart.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_rcc.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_rcc_ex.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_gpio.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_dma.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_cortex.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_pwr.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_flash.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_flash_ex.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_exti.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_hal_i2c.c \
-$(DIR_HARDWARE)/Src/stm32f1xx_it.c \
+$(DIR_HARDWARE)/Src/system_nrf52.c \
+
 
 # ASSEMBLER TRANSLATION FILES
 HW_ASM_FILES = \
