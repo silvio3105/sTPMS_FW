@@ -271,6 +271,15 @@ rtos_cfg:
 
 
 #######################################
+# FLASH SOFTDEVICE
+#######################################		
+
+softdevice:
+	if not exist $(JLINK_SOFTDEVICE) ((echo r & echo h & echo LoadFile $(DIR_HARDWARE)/Softdevice/$(SOFTDEVICE) & echo r & echo q) > $(JLINK_SOFTDEVICE))
+	JLink.exe -device $(JLINK_DEVICE) -if SWD -speed $(JLINK_SPEED) -autoconnect 1 -CommandFile $(JLINK_SOFTDEVICE)
+
+
+#######################################
 # CUSTOM OPTIONS
 #######################################
 
