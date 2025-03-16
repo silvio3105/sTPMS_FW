@@ -89,6 +89,7 @@ BUILD_INCLUDE_PATHS = \
 
 # DEFINES
 BUILD_DEFINES = \
+-DCONFIG_GPIO_AS_PINRESET \
 
 
 ######################################
