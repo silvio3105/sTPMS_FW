@@ -6,7 +6,9 @@
 # APPLICATION C++ TRANSLATION FILES
 APP_CPP_FILES = \
 Application/Main.cpp \
-Libraries/sDebug.cpp 
+Libraries/sDebug.cpp \
+Modules/BLE.cpp \
+Modules/System.cpp \
 
 # APPLICATION C TRANSLATION FILES
 APP_C_FILES = \
