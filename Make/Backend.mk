@@ -280,6 +280,9 @@ softdevice:
 
 
 #######################################
-# CUSTOM OPTIONS
-#######################################
+# SDK CONFIG
+#######################################		
+
+sdk_cfg:
+	java -jar $(CMSIS_WIZARD) $(DIR_HARDWARE)/SDK/sdk_config.h
 
