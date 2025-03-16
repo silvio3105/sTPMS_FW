@@ -26,10 +26,31 @@
 #define _APPCONFIG_HPP_
 
 // ----- INCLUDE FILES
+#include			<stdint.h>
 
+
+/**
+ * @addtogroup ApplicationConfig 
+ * 
+ * Application configuration module.
+ * @{
+ */
 
 // ----- CONFIGURATION
+/**
+ * @brief Application configuration namespace.
+ * 
+ */
+namespace AppConfig
+{
+	static constexpr char deviceName[] = "sTPMS1"; /**< @brief Bluetooth device name. */
+	static constexpr int8_t advTXPower = 4; /**< @brief Bluetooth TX power for advertising role(-40, -20, -16, -12, -8, -4, 0, or 4dBm). */
+	static constexpr uint16_t advPeriod = 160; // Advertising period in ms with resolution of 0.625ms.
+	static constexpr uint8_t advCount = 1; /**< @brief Number of advertisment events before stopping advertise. */
+};
 
+
+/** @} */
 
 #endif // _APPCONFIG_HPP_
 
