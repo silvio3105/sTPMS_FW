@@ -9,6 +9,10 @@ TC_PRINT_VER = 0
 # TOOLCHAIN PREFIX
 TC_PREFIX = arm-none-eabi-
 
+# C/C++ STANDARDS
+TC_C_STD = c17
+TC_CPP_STD = c++17
+
 ifeq ($(GPP), 1)
 TC_CC = $(TC_PREFIX)g++
 TC_AS = $(TC_PREFIX)g++

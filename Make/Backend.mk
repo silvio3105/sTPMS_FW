@@ -181,10 +181,10 @@ OBJECTS += $(addprefix $(DIR_BUILD)/,$(notdir $(ASM_FILES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_FILES)))
 
 $(DIR_BUILD)/%.o: %.c $(MAKEFILE) | $(DIR_BUILD) 
-	$(TC_CC) -c $(COMPILER_FLAGS) -Wa,-a,-ad,-alms=$(DIR_BUILD)/$(notdir $(<:.c=.lst)) $< -o $@
+	$(TC_CC) -c -std=$(TC_C_STD) $(COMPILER_FLAGS) -Wa,-a,-ad,-alms=$(DIR_BUILD)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(DIR_BUILD)/%.o: %.cpp $(MAKEFILE) | $(DIR_BUILD) 
-	$(TC_CC) -c $(COMPILER_FLAGS) -Wa,-a,-ad,-alms=$(DIR_BUILD)/$(notdir $(<:.cpp=.lst)) $< -o $@
+	$(TC_CC) -c -std=$(TC_CPP_STD) $(COMPILER_FLAGS) -Wa,-a,-ad,-alms=$(DIR_BUILD)/$(notdir $(<:.cpp=.lst)) $< -o $@
 
 $(DIR_BUILD)/%.o: %.s $(MAKEFILE) | $(DIR_BUILD)
 	$(TC_AS) -c $(COMPILER_FLAGS) $< -o $@
