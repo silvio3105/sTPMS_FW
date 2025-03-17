@@ -101,7 +101,7 @@ namespace BLE
 	
 		// Configure the BLE stack using the default settings.
 		uint32_t ramStart = 0;
-		ret = nrf_sdh_ble_default_cfg_set(1, &ramStart);
+		ret = nrf_sdh_ble_default_cfg_set(AppConfig::bleTag, &ramStart);
 		if (ret != NRF_SUCCESS)
 		{
 			APP_ERROR_CHECK(ret);
@@ -145,26 +145,25 @@ namespace BLE
 	 * @return \c Return_t::NOK on fail.
 	 * @return \c Return_t::OK on success.
 	 */
-	Return_t advertise(const uint8_t tmp)
+	Return_t advertise(const void* data, const uint8_t len)
 	{
 		// Set custom data
-		uint8_t ble_adv_raw[] = { 0x31, 0x05, tmp, 0xD0, 0x01, 0xA8, 0x64 };
 		ble_advdata_manuf_data_t mnfData;
 		
-		mnfData.company_identifier = 0;
-		mnfData.data.p_data = ble_adv_raw;
-		mnfData.data.size = sizeof(ble_adv_raw);
+		mnfData.company_identifier = 0x3105;
+		mnfData.data.p_data = (uint8_t*)data;
+		mnfData.data.size = len;
 	
 		// Set advertise data
-		ble_advdata_t advdata;
-		memset(&advdata, 0, sizeof(advdata));
-		advdata.name_type = BLE_ADVDATA_FULL_NAME;
-		advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-		advdata.p_manuf_specific_data = &mnfData;
-		advdata.p_tx_power_level = &txPower;
+		ble_advdata_t advData;
+		memset(&advData, 0, sizeof(advData));
+		advData.name_type = BLE_ADVDATA_FULL_NAME;
+		advData.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+		advData.p_manuf_specific_data = &mnfData;
+		advData.p_tx_power_level = &txPower;
 	
 		// Encode advertise data
-		ret_code_t ret = ble_advdata_encode(&advdata, gapAdvData.adv_data.p_data, &gapAdvData.adv_data.len);
+		ret_code_t ret = ble_advdata_encode(&advData, gapAdvData.adv_data.p_data, &gapAdvData.adv_data.len);
 		if (ret != NRF_SUCCESS)
 		{	
 			APP_ERROR_CHECK(ret);
@@ -172,7 +171,7 @@ namespace BLE
 		}
 
 		// Advertise data
-		ret = sd_ble_gap_adv_start(advHandle, 1);
+		ret = sd_ble_gap_adv_start(advHandle, AppConfig::bleTag);
 		if (ret != NRF_SUCCESS)
 		{
 			APP_ERROR_CHECK(ret);
@@ -188,15 +187,15 @@ namespace BLE
 /**
  * @brief Init BLE GAP profile.
  * 
- * @return Return_t::NOK on fail.
- * @return Return_t::OK on success.
+ * @return \c Return_t::NOK on fail.
+ * @return \c Return_t::OK on success.
  */
 static Return_t gapInit(void)
 {
 	ble_gap_conn_sec_mode_t securtiyMode;
 	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&securtiyMode);
 
-	ret_code_t ret = sd_ble_gap_device_name_set(&securtiyMode, (const uint8_t*)AppConfig::deviceName, 6);
+	ret_code_t ret = sd_ble_gap_device_name_set(&securtiyMode, (const uint8_t*)AppConfig::deviceName, __CONST_STR_LEN(AppConfig::deviceName));
 	if (ret != NRF_SUCCESS)
 	{
 		APP_ERROR_CHECK(ret);
@@ -209,8 +208,8 @@ static Return_t gapInit(void)
 /**
  * @brief Init BLE advertise.
  * 
- * @return Return_t::NOK on fail.
- * @return Return_t::OK on success. 
+ * @return \c Return_t::NOK on fail.
+ * @return \c Return_t::OK on success. 
  */
 static Return_t advInit(void)
 {
@@ -246,6 +245,8 @@ static Return_t advInit(void)
  * 
  * @param event Pointer to event data.
  * @param context Pointer to event context.
+ * 
+ * @return No return value.
  */
 static void onBLEEvent(ble_evt_t const* event, void* context)
 {

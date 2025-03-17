@@ -32,8 +32,9 @@
 // ----- NAMESPACES
 namespace BLE
 {
+	// ----- FUNCTION DECLARATIONS
 	Return_t init(void);
-	Return_t advertise(const uint8_t tmp);
+	Return_t advertise(const void* data, const uint8_t len);
 };
 
 
