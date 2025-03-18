@@ -63,6 +63,7 @@ namespace AppConfig
 	static constexpr uint8_t bleTag = 1; /**< @brief Bluetooth connection tag. */
 	static constexpr Hardware_t hwID = Hardware_t::sTPMS1; /**< @brief sTPMS hardware ID. */
 	static constexpr uint8_t rttChannel = 0; /**< @brief RTT channel ID for debug output. */
+	static constexpr uint16_t wdtTimeout = 60; /**< @brief Watchdog timer timeout in s. */
 };
 
 

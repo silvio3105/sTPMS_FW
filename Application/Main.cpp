@@ -90,6 +90,7 @@ int main(void)
 	// Init sTPMS data struct
 	initTPMSData();
 
+	// Init BLE module
 	if (BLE::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("BLE init fail\n");
@@ -99,8 +100,6 @@ int main(void)
 		_PRINT_INFO("BLE init OK\n");
 	}
 
-	_PRINT("Start\n");
-
 	while (1)
 	{
 		updateTPMSData();
@@ -109,6 +108,9 @@ int main(void)
 		{
 			(void)i;
 		}
+
+		// Feed the dog
+		System::feedWatchdog();
 	}
 }
 

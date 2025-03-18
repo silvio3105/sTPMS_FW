@@ -9,7 +9,7 @@
 
 // ----- INCLUDE FILES
 #include			"System.hpp"
-#include			"nrf.h"
+
 
 /**
  * @addtogroup System
@@ -53,6 +53,15 @@ namespace System
 		// Configure power
 		NRF_POWER->POFCON = 0;
 		NRF_POWER->DCDCEN = 1;
+
+		// Init watchdog
+		NRF_WDT->CRV = (AppConfig::wdtTimeout * 32768) - 1;
+		#ifdef DEBUG
+		NRF_WDT->CONFIG = 1;
+		#else
+		NRF_WDT->CONFIG = 9;
+		#endif // DEBUG
+		NRF_WDT->TASKS_START = 1;
 
 		return Return_t::OK;
 	}

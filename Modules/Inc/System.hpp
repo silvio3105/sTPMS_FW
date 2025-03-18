@@ -28,6 +28,8 @@
 // ----- INCLUDE FILES
 #include			"Main.hpp"
 
+#include			"nrf.h"
+
 
 // ----- NAMESPACES
 namespace System
@@ -56,6 +58,20 @@ namespace System
 	
 	// ----- FUNCTION DECLARATION
 	Return_t init(void);
+	
+
+	// ----- FUNCTION DEFINITIONS
+	/**
+	 * @brief Feed/reload watchdog timer.
+	 * 
+	 * @return No return value.
+	 * 
+	 * \ingroup System
+	 */
+	inline void feedWatchdog(void)
+	{
+		NRF_WDT->RR[0] = 0x6E524635;
+	}
 };
 
 
