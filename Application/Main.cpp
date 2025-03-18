@@ -78,8 +78,6 @@ int main(void)
 	NRF_LOG_DEFAULT_BACKENDS_INIT();
 	#endif // DEBUG
 
-	_PRINTF("%d bytes\n", sizeof(data));
-
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
