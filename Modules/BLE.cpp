@@ -135,6 +135,14 @@ namespace BLE
 		}		
 		_PRINTF_INFO("MAC: %02X%02X%02X%02X%02X%02X\n", addr.addr[5], addr.addr[4], addr.addr[3], addr.addr[2], addr.addr[1], addr.addr[0]);
 
+		// Request HFXO
+		ret = sd_clock_hfclk_request();
+		if (ret != NRF_SUCCESS)
+		{
+			APP_ERROR_CHECK(ret);
+			return Return_t::NOK;
+		}		
+
 		// Init advertise
 		return advInit();
 	}
