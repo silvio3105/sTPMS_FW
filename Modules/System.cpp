@@ -33,7 +33,7 @@ namespace System
 	 */
 	Return_t init(void)
 	{
-		// Test HF crystal only in debug build
+		// Test crystals only in debug build
 		#ifdef DEBUG
 		_PRINT("Wait for HFXO\n");
 		NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
@@ -41,7 +41,18 @@ namespace System
 		while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
 		NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;	
 		_PRINT("HFXO started\n");
+
+		_PRINT("Wait for LFXO\n");
+		NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+		NRF_CLOCK->TASKS_LFCLKSTART = 1;
+		while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0);
+		NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;	
+		_PRINT("LFXO started\n");		
 		#endif // DEBUG
+
+		// Configure power
+		NRF_POWER->POFCON = 0;
+		NRF_POWER->DCDCEN = 1;
 
 		return Return_t::OK;
 	}
