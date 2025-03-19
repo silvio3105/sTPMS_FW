@@ -158,7 +158,7 @@ namespace BLE
 		// Set custom data
 		ble_advdata_manuf_data_t mnfData;
 		
-		mnfData.company_identifier = 0x3105;
+		mnfData.company_identifier = AppConfig::bleMnfID;
 		mnfData.data.p_data = (uint8_t*)data;
 		mnfData.data.size = len;
 	
@@ -228,7 +228,7 @@ static Return_t advInit(void)
 	advConfig.max_adv_evts	= AppConfig::advCount;
 	advConfig.p_peer_addr = nullptr;
 	advConfig.filter_policy = BLE_GAP_ADV_FP_ANY;
-	advConfig.interval = AppConfig::advPeriod;
+	advConfig.interval = 100; // Does not matter since max advertise event is set to 1 
 
 	ret_code_t ret = sd_ble_gap_adv_set_configure(&advHandle, &gapAdvData, &advConfig);
 	if (ret != NRF_SUCCESS)

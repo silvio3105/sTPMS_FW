@@ -58,12 +58,13 @@ namespace AppConfig
 	// ----- VARIABLES
 	static constexpr char deviceName[] = "sTPMS1"; /**< @brief Bluetooth device name. */
 	static constexpr int8_t advTXPower = 4; /**< @brief Bluetooth TX power for advertising role(-40, -20, -16, -12, -8, -4, 0, or 4dBm). */
-	static constexpr uint16_t advPeriod = 160; // Advertising period in ms with resolution of 0.625ms.
 	static constexpr uint8_t advCount = 1; /**< @brief Number of advertisment events before stopping advertise. */
 	static constexpr uint8_t bleTag = 1; /**< @brief Bluetooth connection tag. */
 	static constexpr Hardware_t hwID = Hardware_t::sTPMS1; /**< @brief sTPMS hardware ID. */
 	static constexpr uint8_t rttChannel = 0; /**< @brief RTT channel ID for debug output. */
-	static constexpr uint16_t wdtTimeout = 60; /**< @brief Watchdog timer timeout in s. */
+	static constexpr uint16_t wdtTimeout = 60; /**< @brief Watchdog timer timeout in seconds. */
+	static constexpr uint16_t measurePeriod = 15; /**< @brief Measure period in seconds. */
+	static constexpr uint16_t bleMnfID = 0x0531; /**< @brief Manufacturer ID in BLE advertise packet. Set to \c 0x3105. */
 };
 
 
