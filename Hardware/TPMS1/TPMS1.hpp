@@ -52,6 +52,16 @@ namespace Hardware
 	static constexpr uint8_t ledPin = 2; /**< @brief LED GPIO pin. */
 };
 
+/**
+ * @brief Namespace with memory configuration.
+ * 
+ */
+namespace MemoryMap
+{
+	static constexpr uint32_t sramEEPROMStart = 0x2000FC00; /**< @brief Start address of SRAM EEPROM. */
+	static constexpr uint16_t sramEEPROMSize = 0x400; /**< @brief Size of SRAM EEPROM in bytes. */
+};
+
 
 /** @} */
 
