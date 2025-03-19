@@ -49,7 +49,7 @@ namespace System
 	 * @brief Enum class with reset reasons.
 	 * 
 	 */
-	enum class ResetReason_t : uint8_t
+	enum class Reset_t : uint8_t
 	{
 		Unknown = 0, /**< @brief Unknown reset reason. */
 		Powerup = 1, /**< @brief Device powerup. */
