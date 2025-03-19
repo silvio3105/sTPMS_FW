@@ -27,6 +27,7 @@
 #include			"SEGGER_RTT.h"
 #include			"BLE.hpp"
 #include			"System.hpp"
+#include			"Data.hpp"
 
 #include 			"nrf_log.h"
 #include 			"nrf_log_ctrl.h"
@@ -37,32 +38,11 @@
 #include			<string.h>
 
 
-// ----- STRUCTS
-/**
- * @brief sTPMS data packet.
- * 
- */
-struct sTPMSData_s
-{
-	uint16_t pressure; /**< @brief Measured pressure in mbar. */
-	int16_t temperature; /**< @brief Measured temperature in centi degrees celsius. */
-	uint16_t uptime; /**< @brief Device uptime in hours. */
-	System::Error_t errorCode; /**< @brief Last error code. See \ref System::Error_t. */
-	uint8_t voltage; /**< @brief Battery voltage in centivolts. Offset: 200cV. */
-	uint8_t fwVer[3]; /**< @brief sTPMS firmware version - major, minor, build. */
-	const AppConfig::Hardware_t hwID = AppConfig::hwID; /**< @brief sTPMS hardware ID. See \ref AppConfig::Hardware_t. */
-	System::ResetReason_t rstReason; /**< @brief Reset reason. See \ref System::ResetReason_t. */
-	uint8_t rstCount; /**< @brief Reset counter. */
-};
-
-
 // ----- VARIABLES
-static sTPMSData_s data; /**< @brief Sensor data to advertise. */
+Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
-static void initTPMSData(void);
-static void updateTPMSData(void);
 
 
 // ----- FUNCTION DEFINITIONS
@@ -78,15 +58,17 @@ int main(void)
 	NRF_LOG_DEFAULT_BACKENDS_INIT();
 	#endif // DEBUG
 
+	// Init device data
+	Data::init(data);
+
+	_PRINTF("%u bytes\n", sizeof(data));
+
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("System init fail\n");
 		// SOON: Add reset
 	}
-
-	// Init sTPMS data struct
-	initTPMSData();
 
 	// Init BLE module
 	if (BLE::init() != Return_t::OK)
@@ -100,7 +82,6 @@ int main(void)
 
 	while (1)
 	{
-		updateTPMSData();
 		BLE::advertise(&data, sizeof(data));
 		for (uint32_t i = 0; i < 0xFFFFFF; i++)
 		{
@@ -127,46 +108,6 @@ void sDebug::out(const char* string, const uint16_t len)
 
 
 // ----- STATIC FUNCTION DEFINITIONS
-/**
- * @brief Init advertise data struct.
- * 
- * @return No return value.
- */
-static void initTPMSData(void)
-{
-	// SOON: Set real values
-
-	// Set firmware version
-	data.fwVer[0] = 1;
-	data.fwVer[1] = 2;
-	data.fwVer[2] = 3;
-
-	// Set reset stuff
-	data.rstReason = System::ResetReason_t::Powerup;
-	data.rstCount = 1;
-}
-
-/**
- * @brief Update advertise data struct.
- * 
- * @return No return value.
- */
-static void updateTPMSData(void)
-{
-	// SOON: Set real values
-
-	// Update errors
-	data.errorCode = System::Error_t::None;
-
-	// Set measured values
-	data.pressure = 1013;
-	data.temperature = 2552;
-	data.voltage = 120;
-
-	// Set uptime in hours
-	data.uptime++;
-	//data.uptime = 1;
-}
 
 
 // END WITH NEW LINE
