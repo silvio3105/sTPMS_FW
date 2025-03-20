@@ -66,6 +66,7 @@ static ble_gap_adv_data_t gapAdvData = /**< @brief Advertise and scan response d
 		.len = 0
 	}
 };
+static uint8_t advDone = 0;
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -179,6 +180,7 @@ namespace BLE
 		}
 
 		// Advertise data
+		advDone = 0;
 		ret = sd_ble_gap_adv_start(advHandle, AppConfig::bleTag);
 		if (ret != NRF_SUCCESS)
 		{
@@ -187,6 +189,23 @@ namespace BLE
 		}		
 
 		return Return_t::OK;
+	}
+
+	/**
+	 * @brief Check is advertise done.
+	 * 
+	 * @return \c Return_t::NOK advertise is not done.
+	 * @return \c Return_t::OK advertise is done.
+	 */
+	Return_t isAdvertiseDone(void)
+	{
+		if (advDone)
+		{
+			advDone = 0;
+			return Return_t::OK;
+		}
+
+		return Return_t::NOK;
 	}
 };
 
@@ -311,6 +330,7 @@ static void onBLEEvent(ble_evt_t const* event, void* context)
 
 		case BLE_GAP_EVT_ADV_SET_TERMINATED:
 		{
+			advDone = 1;
 			_PRINT_INFO("Advertise done\n");
 			break;
 		}

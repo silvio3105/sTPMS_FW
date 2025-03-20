@@ -35,6 +35,7 @@ namespace BLE
 	// ----- FUNCTION DECLARATIONS
 	Return_t init(void);
 	Return_t advertise(const void* data, const uint8_t len);
+	Return_t isAdvertiseDone(void);
 };
 
 
