@@ -10,6 +10,11 @@
 // ----- INCLUDE FILES
 #include			"System.hpp"
 
+#include			"nrf.h"
+#include			"nrf_nvic.h"
+#include 			"app_error.h"
+#include 			"nrf_soc.h"
+
 
 /**
  * @addtogroup System
@@ -17,6 +22,14 @@
  * System module
  * @{
  */
+
+// ----- VARIABLES
+static volatile uint8_t wakeup = 0; /**< @brief Flag for RTC2 wakeup event. */
+
+
+// ----- STATIC FUNCTION DECLARATIONS
+static void stopWakeupTimer(void);
+
 
 // ----- NAMESPACES
 /**
@@ -63,9 +76,106 @@ namespace System
 		#endif // DEBUG
 		NRF_WDT->TASKS_START = 1;
 
+		// Enable RTC interrupt
+		ret_code_t ret = sd_nvic_SetPriority(RTC2_IRQn, 2);
+		if (ret != NRF_SUCCESS)
+		{
+			APP_ERROR_CHECK(ret);
+			return Return_t::NOK;
+		}
+
+		ret = sd_nvic_EnableIRQ(RTC2_IRQn);
+		if (ret != NRF_SUCCESS)
+		{
+			APP_ERROR_CHECK(ret);
+			return Return_t::NOK;
+		}
+
+		// Enable compare0 interrupt
+		NRF_RTC2->INTENSET = (1 << 16);
+
+		// Set counter resolution of 125ms
+		NRF_RTC2->PRESCALER = 4095;
+
+		startWakeupTimer();
 		return Return_t::OK;
 	}
+
+	/**
+	 * @brief Start RTC2 wakeup timer.
+	 * 
+	 * @return No return value.
+	 */
+	void startWakeupTimer(void)
+	{
+		NRF_RTC2->TASKS_CLEAR = 1;
+		NRF_RTC2->CC[0] = (AppConfig::measurePeriod * 1000) / 125;
+		NRF_RTC2->TASKS_START = 1;
+		_PRINT_INFO("Wakeup timer started\n");
+	}
+
+	/**
+	 * @brief Is device woken up by RTC2 timer?
+	 * 
+	 * @return \c Return_t::NOK not woken up by RTC.
+	 * @return \c Return_t::OK woken up by RTC.
+	 */
+	Return_t isWoken(void)
+	{
+		if (wakeup)
+		{
+			wakeup = 0;
+			return Return_t::OK;
+		}
+
+		return Return_t::NOK;
+	}
+
+	/**
+	 * @brief Put device to sleep.
+	 * 
+	 * @return No return value.
+	 */
+	void sleep(void)
+	{
+		_PRINT("Sleep\n");
+		ret_code_t ret = sd_app_evt_wait();
+		APP_ERROR_CHECK(ret);
+	}
 };
+
+
+// ----- STATIC FUNCTION DEFINITIONS
+static void stopWakeupTimer(void)
+{
+	NRF_RTC2->TASKS_STOP = 1;
+}
+
+
+// ----- INTERRUPTS
+extern "C"
+{
+	/**
+	 * @brief RTC2 interrupt handler.
+	 * 
+	 * @return No return value.
+	 */
+	void RTC2_IRQHandler(void)
+	{
+		sd_nvic_ClearPendingIRQ(RTC2_IRQn);
+
+		if (NRF_RTC2->EVENTS_COMPARE[0])
+		{
+			NRF_RTC2->EVENTS_COMPARE[0] = 0;
+
+			wakeup = 1;
+			stopWakeupTimer();
+			
+			_PRINT_INFO("Wakeup\n");
+			
+		}
+	}
+}
 
 
 /** @} */

@@ -58,6 +58,9 @@ namespace System
 	
 	// ----- FUNCTION DECLARATION
 	Return_t init(void);
+	void startWakeupTimer(void);
+	Return_t isWoken(void);
+	void sleep(void);
 	
 
 	// ----- FUNCTION DEFINITIONS
