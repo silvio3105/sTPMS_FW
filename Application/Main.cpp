@@ -61,8 +61,6 @@ int main(void)
 	// Init device data
 	Data::init(data);
 
-	_PRINTF("%u bytes\n", sizeof(data));
-
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
