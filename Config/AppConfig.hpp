@@ -64,7 +64,7 @@ namespace AppConfig
 	static constexpr uint8_t rttChannel = 0; /**< @brief RTT channel ID for debug output. */
 	static constexpr uint16_t wdtTimeout = 60; /**< @brief Watchdog timer timeout in seconds. */
 	#ifdef DEBUG
-	static constexpr uint16_t measurePeriod = 15; /**< @brief Measure period in seconds debug build. */
+	static constexpr uint16_t measurePeriod = 5; /**< @brief Measure period in seconds debug build. */
 	#else
 	static constexpr uint16_t measurePeriod = 60; /**< @brief Measure period in seconds for release build. */
 	#endif // DEBUG
