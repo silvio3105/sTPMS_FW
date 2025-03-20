@@ -22,7 +22,7 @@ MCU_ARCH = armv7-m
 MCU_BIG_ENDIAN = 0
 
 # MCU FLOAT ABI (leave empty for no float ABI instruction ; "soft" software floating-point ; "softfp" hardware floating-point but software conversions ; "hard" hardware floating-point)
-MCU_FLOAT = hard
+MCU_FLOAT = soft
 
 
 ######################################
