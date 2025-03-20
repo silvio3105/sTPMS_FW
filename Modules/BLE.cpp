@@ -330,7 +330,7 @@ static void onBLEEvent(ble_evt_t const* event, void* context)
 
 		case BLE_GAP_EVT_ADV_SET_TERMINATED:
 		{
-			advDone = 1;
+			advDone = 1;	
 			_PRINT_INFO("Advertise done\n");
 			break;
 		}
