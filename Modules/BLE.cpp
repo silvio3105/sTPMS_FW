@@ -247,7 +247,7 @@ static Return_t advInit(void)
 	advConfig.max_adv_evts	= AppConfig::advCount;
 	advConfig.p_peer_addr = nullptr;
 	advConfig.filter_policy = BLE_GAP_ADV_FP_ANY;
-	advConfig.interval = 100; // Does not matter since max advertise event is set to 1 
+	advConfig.interval = 32; // Does not matter since max advertise event is set to 1 
 
 	ret_code_t ret = sd_ble_gap_adv_set_configure(&advHandle, &gapAdvData, &advConfig);
 	if (ret != NRF_SUCCESS)

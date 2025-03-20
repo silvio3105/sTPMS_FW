@@ -78,17 +78,17 @@ int main(void)
 		_PRINT_INFO("BLE init OK\n");
 	}
 
-	//BLE::advertise(&data, sizeof(data));
+	BLE::advertise(&data, sizeof(data));
 
 	while (1)
 	{
-		/*if (System::isWoken() == Return_t::OK)
+		if (System::isWoken() == Return_t::OK)
 		{
 			BLE::advertise(&data, sizeof(data));
-		}*/
+		}
 
-		//if (BLE::isAdvertiseDone() == Return_t::OK)
-		if (1)
+		if (BLE::isAdvertiseDone() == Return_t::OK)
+		//if (1)
 		{
 			System::startWakeupTimer();
 			System::sleep();
