@@ -142,8 +142,12 @@ namespace System
 		(void) __get_FPSCR();
 		sd_nvic_ClearPendingIRQ(FPU_IRQn);		
 
+		sd_power_dcdc_mode_set(NRF_POWER_DCDC_DISABLE);
+
 		_PRINT("Sleep\n");
 		sd_app_evt_wait();
+
+		sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
 	}
 };
 
