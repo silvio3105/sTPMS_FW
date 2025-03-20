@@ -138,9 +138,12 @@ namespace System
 	 */
 	void sleep(void)
 	{
+		__set_FPSCR(__get_FPSCR()  & ~(0x0000009F));      
+		(void) __get_FPSCR();
+		sd_nvic_ClearPendingIRQ(FPU_IRQn);		
+
 		_PRINT("Sleep\n");
-		ret_code_t ret = sd_app_evt_wait();
-		APP_ERROR_CHECK(ret);
+		sd_app_evt_wait();
 	}
 };
 
