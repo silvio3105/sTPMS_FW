@@ -80,10 +80,15 @@ int main(void)
 
 	while (1)
 	{
-		BLE::advertise(&data, sizeof(data));
-		for (uint32_t i = 0; i < 0xFFFFFF; i++)
+		if (System::isWoken() == Return_t::OK)
 		{
-			(void)i;
+			BLE::advertise(&data, sizeof(data));
+		}
+
+		if (BLE::isAdvertiseDone() == Return_t::OK)
+		{
+			System::startWakeupTimer();
+			System::sleep();
 		}
 
 		// Feed the dog
