@@ -30,7 +30,12 @@ static System::Reset_t resetReason = System::Reset_t::Unknown; /**< @brief Reset
 
 
 // ----- STATIC FUNCTION DECLARATIONS
-static void stopWakeupTimer(void);
+static inline void stopWakeupTimer(void);
+static inline void testXTAL(void);
+static inline void setResetReason(void);
+static inline void powerInit(void);
+static inline void watchdogInit(void);
+static inline void setResetReason(void);
 
 
 // ----- NAMESPACES
@@ -48,71 +53,14 @@ namespace System
 	 */
 	Return_t init(void)
 	{
-		// Test crystals only in debug build
-		#ifdef DEBUG
-		_PRINT("Wait for HFXO\n");
-		NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-		NRF_CLOCK->TASKS_HFCLKSTART = 1;
-		while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
-		NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;	
-		_PRINT("HFXO started\n");
+		// Text HFXO and LFXO crystals only in debug build
+		testXTAL();
 
-		_PRINT("Wait for LFXO\n");
-		NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
-		NRF_CLOCK->TASKS_LFCLKSTART = 1;
-		while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0);
-		NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;	
-		_PRINT("LFXO started\n");		
-		#endif // DEBUG
+		// Init system stuff
+		setResetReason();
+		powerInit();
+		watchdogInit();
 
-		// Configure power
-		NRF_POWER->POFCON = 0;
-		NRF_POWER->DCDCEN = 1;
-
-		// Init watchdog
-		NRF_WDT->CRV = (AppConfig::wdtTimeout * 32768) - 1;
-		#ifdef DEBUG
-		NRF_WDT->CONFIG = 1;
-		#else
-		NRF_WDT->CONFIG = 9;
-		#endif // DEBUG
-		NRF_WDT->TASKS_START = 1;
-
-		// Read reset reason
-		uint32_t tmp = NRF_POWER->RESETREAS;
-		NRF_POWER->RESETREAS = 0;
-
-		// Check HW reset reasons if custom one is not set
-		if (Data::eeprom->rstReason == System::Reset_t::Unknown)
-		{
-			if (tmp & (1 << 0))
-			{
-				resetReason = System::Reset_t::Pin;
-			}
-			else if (tmp & (1 << 1))
-			{
-				resetReason = System::Reset_t::Watchdog;
-			}			
-			else if (tmp & (1 << 2))
-			{
-				resetReason = System::Reset_t::Software;
-			}
-			if (tmp & (1 << 3))
-			{
-				resetReason = System::Reset_t::Lockup;
-			}
-			if (tmp & (0b1111 << 16))
-			{
-				resetReason = System::Reset_t::SystemOff;
-			}					
-		}
-		else
-		{
-			resetReason = Data::eeprom->rstReason;
-		}
-
-		// Reset reset reason in SRAM EEPROM
-		Data::eeprom->rstReason = System::Reset_t::Unknown;
 
 		// Enable RTC interrupt
 		ret_code_t ret = sd_nvic_SetPriority(RTC2_IRQn, 2);
@@ -222,9 +170,109 @@ namespace System
 
 
 // ----- STATIC FUNCTION DEFINITIONS
-static void stopWakeupTimer(void)
+/**
+ * @brief Stop wakeup timer.
+ * 
+ * @return No return value.
+ */
+static inline void stopWakeupTimer(void)
 {
 	NRF_RTC2->TASKS_STOP = 1;
+}
+
+/**
+ * @brief Test external crystals.
+ * 
+ * @return No return value.
+ */
+static inline void testXTAL(void)
+{
+	// Test crystals only in debug build
+	#ifdef DEBUG
+	_PRINT("Wait for HFXO\n");
+	NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
+	NRF_CLOCK->TASKS_HFCLKSTART = 1;
+	while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
+	NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;	
+	_PRINT("HFXO started\n");
+
+	_PRINT("Wait for LFXO\n");
+	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+	NRF_CLOCK->TASKS_LFCLKSTART = 1;
+	while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0);
+	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;	
+	_PRINT("LFXO started\n");		
+	#endif // DEBUG
+}
+
+/**
+ * @brief Set reset reason.
+ * 
+ * @return No return value.
+ */
+static inline void setResetReason(void)
+{
+	uint32_t tmp = NRF_POWER->RESETREAS;
+	NRF_POWER->RESETREAS = 0;
+
+	// Check HW reset reasons if custom one is not set
+	if (Data::eeprom->rstReason == System::Reset_t::Unknown)
+	{
+		if (tmp & (1 << 0))
+		{
+			resetReason = System::Reset_t::Pin;
+		}
+		else if (tmp & (1 << 1))
+		{
+			resetReason = System::Reset_t::Watchdog;
+		}			
+		else if (tmp & (1 << 2))
+		{
+			resetReason = System::Reset_t::Software;
+		}
+		if (tmp & (1 << 3))
+		{
+			resetReason = System::Reset_t::Lockup;
+		}
+		if (tmp & (0b1111 << 16))
+		{
+			resetReason = System::Reset_t::SystemOff;
+		}					
+	}
+	else
+	{
+		resetReason = Data::eeprom->rstReason;
+	}
+
+	// Reset reset reason in SRAM EEPROM
+	Data::eeprom->rstReason = System::Reset_t::Unknown;
+}
+
+/**
+ * @brief Set power configuration.
+ * 
+ * @return No return value.
+ */
+static inline void powerInit(void)
+{
+	NRF_POWER->POFCON = 0;
+	NRF_POWER->DCDCEN = 1;
+}
+
+/**
+ * @brief Set watchdog configuration.
+ * 
+ * @return No return value.
+ */
+static inline void watchdogInit(void)
+{
+	NRF_WDT->CRV = (AppConfig::wdtTimeout * 32768) - 1;
+	#ifdef DEBUG
+	NRF_WDT->CONFIG = 1;
+	#else
+	NRF_WDT->CONFIG = 9;
+	#endif // DEBUG
+	NRF_WDT->TASKS_START = 1;
 }
 
 
