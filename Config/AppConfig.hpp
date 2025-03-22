@@ -69,6 +69,7 @@ namespace AppConfig
 	#endif // DEBUG
 	static constexpr uint8_t wdtTimeout = measurePeriod + 4; /**< @brief Watchdog timer timeout in seconds. */
 	static constexpr uint16_t bleMnfID = 0x3105; /**< @brief Manufacturer ID in BLE advertise packet. */
+	static constexpr uint8_t ledBlinkCount = 3; /**< @brief Number of measurments where LED will blink if reset reason is powerup. */
 };
 
 
