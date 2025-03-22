@@ -91,9 +91,7 @@ namespace BLE
 	 */
 	Return_t init(void)
 	{
-		ret_code_t ret;
-
-		ret = nrf_sdh_enable_request();
+		ret_code_t ret = nrf_sdh_enable_request();
 		if (ret != NRF_SUCCESS)
 		{
 			APP_ERROR_CHECK(ret);
