@@ -65,9 +65,10 @@ namespace System
 		BusFault = 13, /**< @brief Bus fault interrupt reset. */
 		UsageFault = 14, /**< @brief Usage fault interrupt reset. */
 
-		SystemInit = 20, /**< @brief Reset reason due to failed system init. */
-		BLEInit = 21, /**< @brief Reset reason due to failed BLE init. */
-		SensorInit = 22, /**< @brief Reset reason due to failed sensor init. */
+		Unexpected = 20, /**< @brief Reset reason for unexpected reset. */
+		SystemInit = 21, /**< @brief Reset reason due to failed system init. */
+		BLEInit = 22, /**< @brief Reset reason due to failed BLE init. */
+		SensorInit = 23, /**< @brief Reset reason due to failed sensor init. */
 	};
 
 	

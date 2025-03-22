@@ -215,6 +215,8 @@ static inline void setResetReason(void)
 	uint32_t tmp = NRF_POWER->RESETREAS;
 	NRF_POWER->RESETREAS = 0;
 
+	_PRINTF("NRF_POWER RESETREAS %08X\n", tmp);
+
 	// Check HW reset reasons if custom one is not set
 	if (Data::eeprom->rstReason == System::Reset_t::Unknown)
 	{
@@ -230,13 +232,17 @@ static inline void setResetReason(void)
 		{
 			resetReason = System::Reset_t::Software;
 		}
-		if (tmp & (1 << 3))
+		else if (tmp & (1 << 3))
 		{
 			resetReason = System::Reset_t::Lockup;
 		}
-		if (tmp & (0b1111 << 16))
+		else if (tmp & (0b1111 << 16))
 		{
 			resetReason = System::Reset_t::SystemOff;
+		}
+		else
+		{
+			resetReason = System::Reset_t::Unexpected;
 		}					
 	}
 	else
