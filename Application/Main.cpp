@@ -58,6 +58,12 @@ static State_t state = State_t::Advertise; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 
 
+// ----- STATIC FUNCTION DECLARATIONS
+static inline void ledInit(void);
+static inline void ledOn(void);
+static inline void ledOff(void);
+
+
 // ----- FUNCTION DEFINITIONS
 /**
  * @brief Application entry point.
@@ -70,6 +76,10 @@ int main(void)
 	NRF_LOG_INIT(NULL);
 	NRF_LOG_DEFAULT_BACKENDS_INIT();
 	#endif // DEBUG
+
+	// LED init
+	ledInit();
+	ledOn();
 
 	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin),
 	NRF_GPIO_PIN_DIR_OUTPUT,
@@ -111,6 +121,18 @@ int main(void)
 		_PRINT_ERROR("BLE init fail\n");
 		System::reset(System::Reset_t::BLEInit);
 	}
+
+	// Add delay if device is powered up
+	if (System::getResetReason() == System::Reset_t::Powerup)
+	{
+		for (uint32_t i = 0; i < 0xFFFFF; i++)
+		{
+			(void)i;
+		}
+	}
+	ledOff();
+
+	_PRINTF("RST reason %u\n", System::getResetReason());
 
 	while (1)
 	{
@@ -178,6 +200,41 @@ void sDebug::out(const char* string, const uint16_t len)
 
 
 // ----- STATIC FUNCTION DEFINITIONS
+/**
+ * @brief Init the LED.
+ * 
+ * @return No return value.
+ */
+static inline void ledInit(void)
+{
+	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ledPort, Hardware::ledPin),
+	NRF_GPIO_PIN_DIR_OUTPUT,
+	NRF_GPIO_PIN_INPUT_DISCONNECT,
+	NRF_GPIO_PIN_NOPULL,
+	NRF_GPIO_PIN_S0S1,
+	NRF_GPIO_PIN_NOSENSE);
+	ledOff();
+}
+
+/**
+ * @brief Turn on the LED.
+ * 
+ * @return No return value.
+ */
+static inline void ledOn(void)
+{
+	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ledPort, Hardware::ledPin), 0);	
+}
+
+/**
+ * @brief Turn off the LED.
+ * 
+ * @return No return value.
+ */
+static inline void ledOff(void)
+{
+	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ledPort, Hardware::ledPin), 1);	
+}
 
 
 // END WITH NEW LINE
