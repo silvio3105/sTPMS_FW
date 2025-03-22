@@ -38,11 +38,23 @@
 #include			<string.h>
 
 
+// ----- ENUMS
+/**
+ * @brief Enum class with application states.
+ * 
+ */
+enum class State_t : uint8_t
+{
+	Sleep = 0, /**< @brief Application sleep state. */
+	Measure, /**< @brief Application measure state. */
+	Advertise, /**< @brief Application advertise state. */
+};
+
+
 // ----- VARIABLES
 Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
-
-
-// ----- STATIC FUNCTION DECLARATIONS
+State_t state = State_t::Advertise; /**< @brief Application state. */
+uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 
 
 // ----- FUNCTION DEFINITIONS
@@ -78,20 +90,50 @@ int main(void)
 		_PRINT_INFO("BLE init OK\n");
 	}
 
-	BLE::advertise(&data, sizeof(data));
-
 	while (1)
 	{
-		if (System::isWoken() == Return_t::OK)
+		switch (state)
 		{
-			BLE::advertise(&data, sizeof(data));
+			case State_t::Measure:
+			{
+				// SOON: Add measure stuff
+				state = State_t::Advertise;
+				break;
+			}
+
+			case State_t::Advertise:
+			{
+				// Advertise sTPMS data
+				BLE::advertise(&data, sizeof(data));
+
+				// Wait for advertise to end
+				while (BLE::isAdvertiseDone() == Return_t::OK);
+
+				// Go to sleep
+				state = State_t::Sleep;
+				break;
+			}
+
+			default:
+			{
+				// Start wakeup timer if needed
+				if (!wakeupSet)
+				{
+					wakeupSet = 1;
+					System::startWakeupTimer();
+				}
+
+				// Put device to sleep
+				System::sleep();
+				break;
+			}
 		}
 
-		if (BLE::isAdvertiseDone() == Return_t::OK)
-		//if (1)
+		// Woken by RTC2
+		if (System::isWoken() == Return_t::OK)
 		{
-			System::startWakeupTimer();
-			System::sleep();
+			wakeupSet = 0;
+			state = State_t::Measure;
 		}
 
 		// Feed the dog
