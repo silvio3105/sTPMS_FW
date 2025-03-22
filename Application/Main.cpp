@@ -52,9 +52,9 @@ enum class State_t : uint8_t
 
 
 // ----- VARIABLES
-Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
-State_t state = State_t::Advertise; /**< @brief Application state. */
-uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
+static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
+static State_t state = State_t::Advertise; /**< @brief Application state. */
+static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 
 
 // ----- FUNCTION DEFINITIONS
@@ -70,24 +70,21 @@ int main(void)
 	NRF_LOG_DEFAULT_BACKENDS_INIT();
 	#endif // DEBUG
 
-	// Init device data
+	// Init device data and SRAM EEPROM
 	Data::init(data);
 
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("System init fail\n");
-		// SOON: Add reset
+		System::reset(System::Reset_t::SystemInit);
 	}
 
 	// Init BLE module
 	if (BLE::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("BLE init fail\n");
-	}
-	else
-	{
-		_PRINT_INFO("BLE init OK\n");
+		System::reset(System::Reset_t::BLEInit);
 	}
 
 	while (1)
@@ -108,6 +105,9 @@ int main(void)
 
 				// Wait for advertise to end
 				while (BLE::isAdvertiseDone() == Return_t::OK);
+
+				// Feed the dog
+				System::feedWatchdog();
 
 				// Go to sleep
 				state = State_t::Sleep;
@@ -134,10 +134,7 @@ int main(void)
 		{
 			wakeupSet = 0;
 			state = State_t::Measure;
-		}
-
-		// Feed the dog
-		System::feedWatchdog();
+		}		
 	}
 }
 
