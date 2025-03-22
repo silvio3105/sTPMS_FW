@@ -75,6 +75,8 @@ namespace Data
 		uint8_t rstCount; /**< @brief Device reset counter. */
 		uint8_t _padding1; // Padding byte
 		uint16_t measureCnt; /**< @brief Measure counter used to track device uptime. */
+
+		System::Reset_t rstReason; /**< @brief Reset reason. */
 	};
 
 
