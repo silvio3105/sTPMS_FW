@@ -62,12 +62,12 @@ namespace AppConfig
 	static constexpr uint8_t bleTag = 1; /**< @brief Bluetooth connection tag. */
 	static constexpr Hardware_t hwID = Hardware_t::sTPMS1; /**< @brief sTPMS hardware ID. */
 	static constexpr uint8_t rttChannel = 0; /**< @brief RTT channel ID for debug output. */
-	static constexpr uint16_t wdtTimeout = 60; /**< @brief Watchdog timer timeout in seconds. */
 	#ifdef DEBUG
 	static constexpr uint16_t measurePeriod = 5; /**< @brief Measure period in seconds debug build. */
 	#else
 	static constexpr uint16_t measurePeriod = 60; /**< @brief Measure period in seconds for release build. */
 	#endif // DEBUG
+	static constexpr uint8_t wdtTimeout = measurePeriod + 4; /**< @brief Watchdog timer timeout in seconds. */
 	static constexpr uint16_t bleMnfID = 0x0531; /**< @brief Manufacturer ID in BLE advertise packet. Set to \c 0x3105. */
 };
 
