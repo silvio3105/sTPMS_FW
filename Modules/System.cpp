@@ -254,27 +254,32 @@ extern "C"
 
 	void NMI_Handler(void)
 	{
-
+		_PRINT_ERROR("NMI\n");
+		System::reset(System::Reset_t::NMI);
 	}
 
 	void HardFault_Handler(void)
 	{
-
+		_PRINT_ERROR("HardFault\n");
+		System::reset(System::Reset_t::HardFault);
 	}
 
 	void MemoryManagement_Handler(void)
 	{
-
+		_PRINT_ERROR("MM\n");
+		System::reset(System::Reset_t::MM);
 	}
 
 	void BusFault_Handler(void)
 	{
-
+		_PRINT_ERROR("BusFault\n");
+		System::reset(System::Reset_t::BusFault);
 	}
 
 	void UsageFault_Handler(void)
 	{
-
+		_PRINT_ERROR("UsageFault\n");
+		System::reset(System::Reset_t::UsageFault);
 	}
 }
 
