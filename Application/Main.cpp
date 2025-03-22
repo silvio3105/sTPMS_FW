@@ -28,6 +28,7 @@
 #include			"BLE.hpp"
 #include			"System.hpp"
 #include			"Data.hpp"
+#include			"ADC.hpp"
 
 #include 			"nrf_log.h"
 #include 			"nrf_log_ctrl.h"
