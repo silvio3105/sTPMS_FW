@@ -61,7 +61,6 @@ namespace System
 		powerInit();
 		watchdogInit();
 
-
 		// Enable RTC interrupt
 		ret_code_t ret = sd_nvic_SetPriority(RTC2_IRQn, 2);
 		if (ret != NRF_SUCCESS)
@@ -214,8 +213,6 @@ static inline void setResetReason(void)
 {
 	uint32_t tmp = NRF_POWER->RESETREAS;
 	NRF_POWER->RESETREAS = 0;
-
-	_PRINTF("NRF_POWER RESETREAS %08X\n", tmp);
 
 	// Check HW reset reasons if custom one is not set
 	if (Data::eeprom->rstReason == System::Reset_t::Unknown)
