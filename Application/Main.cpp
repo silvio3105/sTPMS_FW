@@ -58,6 +58,7 @@ static State_t state = State_t::Advertise; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 static uint16_t measureCount = 0; /**< @brief Measure counter. */
 static constexpr uint16_t measureCountInHour = 3600 / AppConfig::measurePeriod; /**< @brief Number of measurments in one hour. */
+static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -133,10 +134,34 @@ int main(void)
 		{
 			case State_t::Measure:
 			{
+				// Turn on the LED if device is powered on
+				if (System::getResetReason() == System::Reset_t::Powerup)
+				{
+					if (ledMeasureCount < AppConfig::ledBlinkCount)
+					{
+						ledOn();
+					}
+				}
+			
 				// SOON: Add measure stuff
 				state = State_t::Advertise;
 
-				// Increase uptime if needed
+				// Turn off the LED if device if powered on
+				if (System::getResetReason() == System::Reset_t::Powerup)
+				{
+					if (ledMeasureCount < AppConfig::ledBlinkCount)
+					{
+						for (uint32_t i = 0; i < 0xFFF8; i++)
+						{
+							(void)i;
+						}
+
+						ledOff();
+						ledMeasureCount++;
+					}
+				}		
+
+				// Increase measure count and uptime if needed
 				measureCount++;
 				if (measureCount >= measureCountInHour)
 				{
@@ -153,7 +178,7 @@ int main(void)
 				BLE::advertise(&data, sizeof(data));
 
 				// Wait for advertise to end
-				while (BLE::isAdvertiseDone() == Return_t::OK);
+				while (BLE::isAdvertiseDone() == Return_t::OK);		
 
 				// Feed the dog
 				System::feedWatchdog();
