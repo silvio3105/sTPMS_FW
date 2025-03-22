@@ -277,6 +277,7 @@ namespace Data
 		{
 			memset(eeprom, 0, sizeof(EEPROM_s));
 			eeprom->inited = Init_t::Inited;
+			eeprom->rstReason = System::Reset_t::Powerup;
 			_PRINT("SRAM EEPROM inited\n");
 		}
 		else
