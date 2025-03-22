@@ -155,6 +155,7 @@ namespace Data
 		inline void increaseUptime(void)
 		{
 			uptime++;
+			eeprom->uptime = uptime;
 		}
 
 		/**
@@ -224,7 +225,7 @@ namespace Data
 		 */
 		inline void setConfig(const AppConfig::Hardware_t hwID, const uint8_t measurePeriod)
 		{
-			config = (uint8_t)hwID | ((measurePeriod / cfgPeriodRes) << cfgPeriodBit);
+			config = ((uint8_t)hwID << cfgHWIDBit) | ((measurePeriod / cfgPeriodRes) << cfgPeriodBit);
 		}
 
 
