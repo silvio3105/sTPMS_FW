@@ -56,6 +56,8 @@ enum class State_t : uint8_t
 static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
 static State_t state = State_t::Advertise; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
+static uint16_t measureCount = 0; /**< @brief Measure counter. */
+static constexpr uint16_t measureCountInHour = 3600 / AppConfig::measurePeriod; /**< @brief Number of measurments in one hour. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -122,17 +124,8 @@ int main(void)
 		System::reset(System::Reset_t::BLEInit);
 	}
 
-	// Add delay if device is powered up
-	if (System::getResetReason() == System::Reset_t::Powerup)
-	{
-		for (uint32_t i = 0; i < 0xFFFFF; i++)
-		{
-			(void)i;
-		}
-	}
 	ledOff();
-
-	_PRINTF("RST reason %u\n", System::getResetReason());
+	_PRINTF("Reset reason %u\n", System::getResetReason());
 
 	while (1)
 	{
@@ -142,6 +135,15 @@ int main(void)
 			{
 				// SOON: Add measure stuff
 				state = State_t::Advertise;
+
+				// Increase uptime if needed
+				measureCount++;
+				if (measureCount >= measureCountInHour)
+				{
+					measureCount = 0;
+					data.increaseUptime();
+					_PRINT_INFO("Uptime++\n");
+				}
 				break;
 			}
 
