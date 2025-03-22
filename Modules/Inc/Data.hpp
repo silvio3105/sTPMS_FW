@@ -169,7 +169,15 @@ namespace Data
 		 */			
 		inline void setVoltage(const uint16_t value)
 		{
-			voltage = (value / voltageRes) - voltageOffset;
+			if (value)
+			{
+				voltage = (value / voltageRes) - voltageOffset;
+			}
+			else
+			{
+				voltage = 0;
+			}
+			
 			eeprom->lastVoltage = value;
 		}
 
