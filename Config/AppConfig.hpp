@@ -68,7 +68,7 @@ namespace AppConfig
 	static constexpr uint16_t measurePeriod = 60; /**< @brief Measure period in seconds for release build. */
 	#endif // DEBUG
 	static constexpr uint8_t wdtTimeout = measurePeriod + 4; /**< @brief Watchdog timer timeout in seconds. */
-	static constexpr uint16_t bleMnfID = 0x0531; /**< @brief Manufacturer ID in BLE advertise packet. Set to \c 0x3105. */
+	static constexpr uint16_t bleMnfID = 0x3105; /**< @brief Manufacturer ID in BLE advertise packet. */
 };
 
 
