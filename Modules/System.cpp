@@ -9,6 +9,7 @@
 
 // ----- INCLUDE FILES
 #include			"System.hpp"
+#include			"Data.hpp"
 
 #include			"nrf.h"
 #include			"nrf_nvic.h"
@@ -25,6 +26,7 @@
 
 // ----- VARIABLES
 static volatile uint8_t wakeup = 0; /**< @brief Flag for RTC2 wakeup event. */
+static System::Reset_t resetReason = System::Reset_t::Unknown; /**< @brief Reset reason. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -75,6 +77,42 @@ namespace System
 		NRF_WDT->CONFIG = 9;
 		#endif // DEBUG
 		NRF_WDT->TASKS_START = 1;
+
+		// Read reset reason
+		uint32_t tmp = NRF_POWER->RESETREAS;
+		NRF_POWER->RESETREAS = 0;
+
+		// Check HW reset reasons if custom one is not set
+		if (Data::eeprom->rstReason == System::Reset_t::Unknown)
+		{
+			if (tmp & (1 << 0))
+			{
+				resetReason = System::Reset_t::Pin;
+			}
+			else if (tmp & (1 << 1))
+			{
+				resetReason = System::Reset_t::Watchdog;
+			}			
+			else if (tmp & (1 << 2))
+			{
+				resetReason = System::Reset_t::Software;
+			}
+			if (tmp & (1 << 3))
+			{
+				resetReason = System::Reset_t::Lockup;
+			}
+			if (tmp & (0b1111 << 16))
+			{
+				resetReason = System::Reset_t::SystemOff;
+			}					
+		}
+		else
+		{
+			resetReason = Data::eeprom->rstReason;
+		}
+
+		// Reset reset reason in SRAM EEPROM
+		Data::eeprom->rstReason = System::Reset_t::Unknown;
 
 		// Enable RTC interrupt
 		ret_code_t ret = sd_nvic_SetPriority(RTC2_IRQn, 2);
@@ -149,6 +187,37 @@ namespace System
 
 		sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
 	}
+
+	/**
+	 * @brief Get system reset reason.
+	 * 
+	 * @return See \ref Reset_t for possible return values. 
+	 */
+	Reset_t getResetReason(void)
+	{
+		return resetReason;
+	}
+
+	/**
+	 * @brief Do system reset.
+	 * 
+	 * @param reason Reset reason. Optional.
+	 * 
+	 * @return No return value.
+	 */
+	void reset(const Reset_t reason = Reset_t::Unknown)
+	{
+		while (1)
+		{
+			// Set reset reason if needed
+			if (reason != Reset_t::Unknown)
+			{
+				Data::eeprom->rstReason = reason;
+			}
+			
+			sd_nvic_SystemReset();
+		}
+	}
 };
 
 
@@ -181,6 +250,31 @@ extern "C"
 			_PRINT_INFO("Wakeup\n");
 			
 		}
+	}
+
+	void NMI_Handler(void)
+	{
+
+	}
+
+	void HardFault_Handler(void)
+	{
+
+	}
+
+	void MemoryManagement_Handler(void)
+	{
+
+	}
+
+	void BusFault_Handler(void)
+	{
+
+	}
+
+	void UsageFault_Handler(void)
+	{
+
 	}
 }
 

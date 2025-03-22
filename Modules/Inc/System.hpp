@@ -53,6 +53,21 @@ namespace System
 	{
 		Unknown = 0, /**< @brief Unknown reset reason. */
 		Powerup = 1, /**< @brief Device powerup. */
+		Pin = 2, /**< @brief Reset via reset pin. */
+		Watchdog = 3, /**< @brief Watchdog timeout reset. */
+		Software = 4, /**< @brief Software reset. */
+		Lockup = 5, /**< @brief CPU lockup detected. */
+		SystemOff = 6, /**< @brief Wakeup from system off reset. */
+
+		NMI = 10, /**< @brief Non maskable interrupt reset. */
+		HardFault = 11, /**< @brief Hard fault interrupt reset. */
+		MM = 12, /**< @brief Memory managment interrupt reset. */
+		BusFault = 13, /**< @brief Bus fault interrupt reset. */
+		UsageFault = 14, /**< @brief Usage fault interrupt reset. */
+
+		SystemInit = 20, /**< @brief Reset reason due to failed system init. */
+		BLEInit = 21, /**< @brief Reset reason due to failed BLE init. */
+		SensorInit = 22, /**< @brief Reset reason due to failed sensor init. */
 	};
 
 	
@@ -61,6 +76,8 @@ namespace System
 	void startWakeupTimer(void);
 	Return_t isWoken(void);
 	void sleep(void);
+	Reset_t getResetReason(void);
+	void reset(const Reset_t reason);
 	
 
 	// ----- FUNCTION DEFINITIONS
