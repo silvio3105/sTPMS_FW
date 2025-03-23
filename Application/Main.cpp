@@ -156,6 +156,10 @@ int main(void)
 				ADC::measure();
 				while (ADC::isDone() != Return_t::OK);
 				data.setVoltage(ADC::getVoltage());
+
+				// SOON: Replace with real stuff
+				data.setPressure(1013);
+				data.setTemperature(2052);
 			
 				// SOON: Add measure stuff
 				state = State_t::Advertise;
