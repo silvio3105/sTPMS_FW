@@ -35,7 +35,7 @@ namespace ADC
 	Return_t init(void);
 	void measure(void);
 	Return_t isDone(void);
-	uint32_t getVoltage(void);
+	uint16_t getVoltage(void);
 };
 
 

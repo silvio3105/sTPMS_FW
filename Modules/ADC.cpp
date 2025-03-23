@@ -39,13 +39,23 @@
  */
 
 // ----- VARIABLES
-static uint16_t adcRaw = 0;
-static uint16_t voltage = 0;
+static uint16_t adcRaw = 0; /**< @brief Output variable for ADC. */
+static uint16_t voltage = 0; /**< @brief Calculated voltage in mV. */
 
 
 // ----- NAMESPACES
+/**
+ * @brief ADC module namespace.
+ * 
+ */
 namespace ADC
 {
+	/**
+	 * @brief Init ADC.
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success. 
+	 */
 	Return_t init(void)
 	{
 		// Enable END event
@@ -84,6 +94,11 @@ namespace ADC
 		return Return_t::OK;
 	}
 
+	/**
+	 * @brief Measure battery voltage.
+	 * 
+	 * @return No return value.
+	 */
 	void measure(void)
 	{
 		voltage = 0;
@@ -93,6 +108,12 @@ namespace ADC
 		NRF_SAADC->TASKS_SAMPLE = 1;
 	}
 
+	/**
+	 * @brief Check if ADC is done with measuring.
+	 * 
+	 * @return \c Return_t::NOK ADC is not done.
+	 * @return \c Return_t::OK ADC is done.
+	 */
 	Return_t isDone(void)
 	{
 		if (voltage)
@@ -103,7 +124,12 @@ namespace ADC
 		return Return_t::NOK;
 	}
 
-	uint32_t getVoltage(void)
+	/**
+	 * @brief Get battery voltage.
+	 * 
+	 * @return Battery voltage in mV.
+	 */
+	uint16_t getVoltage(void)
 	{
 		return voltage;
 	}
@@ -113,6 +139,11 @@ namespace ADC
 // ----- INTERRUPTS
 extern "C"
 {
+	/**
+	 * @brief ADC interrupt handler.
+	 * 
+	 * @return No return value.
+	 */
 	void SAADC_IRQHandler(void)
 	{
 		sd_nvic_ClearPendingIRQ(SAADC_IRQn);
