@@ -57,8 +57,7 @@ enum class State_t : uint8_t
 static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
 static State_t state = State_t::Advertise; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
-static uint16_t measureCount = 0; /**< @brief Measure counter. */
-static constexpr uint16_t measureCountInHour = 3600 / AppConfig::measurePeriod; /**< @brief Number of measurments in one hour. */
+static uint16_t workingSeconds = 0; /**< @brief Working seconds counter. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
 
 
@@ -179,11 +178,11 @@ int main(void)
 					}
 				}		
 
-				// Increase measure count and uptime if needed
-				measureCount++;
-				if (measureCount >= measureCountInHour)
+				// Increase working seconds and uptime if needed
+				workingSeconds += AppConfig::measurePeriod;
+				if (workingSeconds >= 3600)
 				{
-					measureCount = 0;
+					workingSeconds = 0;
 					data.increaseUptime();
 					_PRINT_INFO("Uptime++\n");
 				}
