@@ -25,6 +25,11 @@
 // ----- INCLUDE FILES
 #include			"ADC.hpp"
 
+#include			"nrf.h"
+#include			"nrf_nvic.h"
+#include			"sdk_errors.h"
+#include			"app_error.h"
+
 
 /**
  * @addtogroup ADC 
@@ -33,12 +38,95 @@
  * @{
  */
 
+// ----- VARIABLES
+static uint16_t adcRaw = 0;
+static uint16_t voltage = 0;
+
 
 // ----- NAMESPACES
 namespace ADC
 {
+	Return_t init(void)
+	{
+		// Enable END event
+		NRF_SAADC->INTEN = 1 << 1;
 
+		// Configure CH0 to VDD (Vref_int, 1/6 input gain, burst enabled)
+		NRF_SAADC->CH[0].PSELN = 0;
+		NRF_SAADC->CH[0].PSELP = 9;
+		NRF_SAADC->CH[0].CONFIG = (2 << 16) | (1 << 24);
+
+		// Set 12-bit resolution
+		NRF_SAADC->RESOLUTION = 2;
+
+		// Configure oversampling
+		NRF_SAADC->OVERSAMPLE = 4;
+
+		// Set output buffer
+		NRF_SAADC->RESULT.PTR = (uint32_t)&adcRaw;
+		NRF_SAADC->RESULT.MAXCNT = 1;
+
+		// Enable ADC IRQ
+		ret_code_t ret = sd_nvic_SetPriority(SAADC_IRQn, 3);
+		if (ret != NRF_SUCCESS)
+		{
+			APP_ERROR_CHECK(ret);
+			return Return_t::NOK;
+		}
+
+		ret = sd_nvic_EnableIRQ(SAADC_IRQn);
+		if (ret != NRF_SUCCESS)
+		{
+			APP_ERROR_CHECK(ret);
+			return Return_t::NOK;
+		}
+		
+		return Return_t::OK;
+	}
+
+	void measure(void)
+	{
+		voltage = 0;
+		adcRaw = 0;
+		NRF_SAADC->ENABLE = 1;
+		NRF_SAADC->TASKS_START = 1;
+		NRF_SAADC->TASKS_SAMPLE = 1;
+	}
+
+	Return_t isDone(void)
+	{
+		if (voltage)
+		{
+			return Return_t::OK;
+		}
+
+		return Return_t::NOK;
+	}
+
+	uint32_t getVoltage(void)
+	{
+		return voltage;
+	}
 };
+
+
+// ----- INTERRUPTS
+extern "C"
+{
+	void SAADC_IRQHandler(void)
+	{
+		sd_nvic_ClearPendingIRQ(SAADC_IRQn);
+
+		if (NRF_SAADC->EVENTS_END)
+		{
+			voltage = (600 * ((adcRaw * 1000) / 4096) * 6) / 1000;
+			NRF_SAADC->EVENTS_END = 0;
+			NRF_SAADC->TASKS_STOP = 1;
+			NRF_SAADC->ENABLE = 0;
+			_PRINTF("ADC %u %u\n", adcRaw, voltage);
+		}
+	}
+}
 
 
 /** @} */

@@ -126,6 +126,12 @@ int main(void)
 		System::reset(System::Reset_t::BLEInit);
 	}
 
+	if (ADC::init() != Return_t::OK)
+	{
+		_PRINT_ERROR("ADC init fail\n");
+		System::reset(System::Reset_t::ADCInit);
+	}
+	
 	ledOff();
 	_PRINTF("Reset reason %u\n", System::getResetReason());
 
@@ -135,6 +141,8 @@ int main(void)
 		{
 			case State_t::Measure:
 			{
+				_PRINT_INFO("--- MEASURE\n");
+
 				// Turn on the LED if device is powered on
 				if (System::getResetReason() == System::Reset_t::Powerup)
 				{
@@ -143,6 +151,11 @@ int main(void)
 						ledOn();
 					}
 				}
+
+				// Measure voltage
+				ADC::measure();
+				while (ADC::isDone() != Return_t::OK);
+				data.setVoltage(ADC::getVoltage());
 			
 				// SOON: Add measure stuff
 				state = State_t::Advertise;
@@ -175,6 +188,8 @@ int main(void)
 
 			case State_t::Advertise:
 			{
+				_PRINT_INFO("--- ADVERTISE\n");
+
 				// Advertise sTPMS data
 				BLE::advertise(&data, sizeof(data));
 

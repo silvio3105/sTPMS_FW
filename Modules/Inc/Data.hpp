@@ -178,6 +178,7 @@ namespace Data
 				voltage = 0;
 			}
 			
+			_PRINTF("Voltage set to %ucV(%umV)\n", voltage, value);
 			eeprom->lastVoltage = value;
 		}
 

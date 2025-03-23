@@ -25,11 +25,17 @@
 #ifndef _ADC_HPP_
 #define _ADC_HPP_
 
+// ----- INCLUDE FILES
+#include			"Main.hpp"
+
 
 // ----- NAMESPACES
 namespace ADC
 {
-
+	Return_t init(void);
+	void measure(void);
+	Return_t isDone(void);
+	uint32_t getVoltage(void);
 };
 
 
