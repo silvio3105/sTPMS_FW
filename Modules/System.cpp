@@ -10,6 +10,7 @@
 // ----- INCLUDE FILES
 #include			"System.hpp"
 #include			"Data.hpp"
+#include			"BLE.hpp"
 
 #include			"nrf.h"
 #include			"nrf_nvic.h"

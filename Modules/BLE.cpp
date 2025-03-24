@@ -146,6 +146,17 @@ namespace BLE
 		return advInit();
 	}
 
+	Return_t deinit(void)
+	{
+		ret_code_t ret = nrf_sdh_disable_request();
+		if (ret != NRF_SUCCESS)
+		{
+			APP_ERROR_CHECK(ret);
+			return Return_t::NOK;
+		}		
+		return Return_t::OK;
+	}
+
 	/**
 	 * @brief Advertise data.
 	 * 
