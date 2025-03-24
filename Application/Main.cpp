@@ -29,6 +29,7 @@
 #include			"System.hpp"
 #include			"Data.hpp"
 #include			"ADC.hpp"
+#include			"sBuildInfo.h"
 
 #include 			"nrf_log.h"
 #include 			"nrf_log_ctrl.h"
@@ -38,6 +39,10 @@
 #include			<stdint.h>
 #include 			<stdio.h>
 #include			<string.h>
+
+
+// ----- BUILD INFO
+__SBI(APP_NAME, APP_VERSION, APP_HW, "");
 
 
 // ----- ENUMS
@@ -57,7 +62,6 @@ enum class State_t : uint8_t
 static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
 static State_t state = State_t::Advertise; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
-static uint16_t workingSeconds = 0; /**< @brief Working seconds counter. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
 
 
@@ -79,6 +83,8 @@ int main(void)
 	NRF_LOG_INIT(NULL);
 	NRF_LOG_DEFAULT_BACKENDS_INIT();
 	#endif // DEBUG
+
+	_PRINTF("%s %s\n%s\n%s %s\n", SBI_APP_NAME, SBI_APP_VER, SBI_APP_HW, SBI_APP_DATE, SBI_APP_TIME);
 
 	// LED init
 	ledInit();
@@ -179,10 +185,10 @@ int main(void)
 				}		
 
 				// Increase working seconds and uptime if needed
-				workingSeconds += AppConfig::measurePeriod;
-				if (workingSeconds >= 3600)
+				Data::eeprom->workingSeconds += AppConfig::measurePeriod;
+				if (Data::eeprom->workingSeconds >= 3600)
 				{
-					workingSeconds = 0;
+					Data::eeprom->workingSeconds = 0;
 					data.increaseUptime();
 					_PRINT_INFO("Uptime++\n");
 				}
