@@ -10,6 +10,7 @@ Libraries/sDebug.cpp \
 Modules/BLE.cpp \
 Modules/System.cpp \
 Modules/ADC.cpp \
+Modules/TWI.cpp \
 
 # APPLICATION C TRANSLATION FILES
 APP_C_FILES = \
