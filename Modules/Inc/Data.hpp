@@ -77,6 +77,8 @@ namespace Data
 		uint16_t measureCnt; /**< @brief Measure counter used to track device uptime. */
 
 		System::Reset_t rstReason; /**< @brief Reset reason. */
+		uint8_t _padding2; // Padding byte
+		uint16_t workingSeconds; /**< @brief Working seconds counter. */
 	};
 
 
