@@ -27,9 +27,11 @@
 
 // ----- INCLUDE FILES
 #include			"System.hpp"
+#include			"sBuildInfo.h"
 
 #include			<stdint.h>
 #include			<string.h>
+#include			<stdio.h>
 
 /**
  * @addtogroup Data
@@ -298,6 +300,12 @@ namespace Data
 			_PRINT("SRAM EEPROM already inited\n");
 		}
 
+		// Parse firmware version
+		uint8_t major = 0;
+		uint8_t minor = 0;
+		uint8_t build = 0;
+
+		sscanf((const char*)SBI_APP_VER, "v%hhu.%hhu.%hhu", &major, &minor, &build);
 
 		/*
 			Init sTPMS data object
@@ -308,7 +316,7 @@ namespace Data
 		data.setUptime(eeprom->uptime);
 		data.setVoltage(eeprom->lastVoltage);
 		data.setErrorCode(System::Error_t::None);
-		data.setFirmwareVersion(1, 2, 3); // SOON: Replace
+		data.setFirmwareVersion(major, minor, build); // SOON: Replace
 		data.setReset(System::Reset_t::Powerup, eeprom->rstCount);
 		data.setConfig(AppConfig::hwID, AppConfig::measurePeriod);
 	}
