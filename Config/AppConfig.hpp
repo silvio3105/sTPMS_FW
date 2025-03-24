@@ -39,9 +39,6 @@
 // ----- DEFINES
 #define APP_NAME			"sTPMS_FW"
 #define APP_VERSION			"v1.0.0rc1"
-#define APP_HW				"24-0012rev1"
-
-
 
 
 // ----- CONFIGURATION

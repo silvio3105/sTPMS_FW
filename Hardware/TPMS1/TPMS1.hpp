@@ -34,6 +34,9 @@
  * @{
  */
 
+// ----- DEFINES
+#define APP_HW				"24-0012rev1"
+
  
 // ----- NAMESPACES
 /**
