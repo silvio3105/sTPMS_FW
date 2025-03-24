@@ -250,6 +250,7 @@ static inline void setResetReason(void)
 
 	// Reset reset reason in SRAM EEPROM
 	Data::eeprom->rstReason = System::Reset_t::Unknown;
+	_PRINTF("Reset reason: %u\n", System::getResetReason());
 }
 
 /**
@@ -290,6 +291,7 @@ extern "C"
 	 */
 	void RTC2_IRQHandler(void)
 	{
+		_PRINT("RTC2 IRQ\n");
 		sd_nvic_ClearPendingIRQ(RTC2_IRQn);
 
 		if (NRF_RTC2->EVENTS_COMPARE[0])
