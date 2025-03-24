@@ -53,7 +53,7 @@ SECTIONS
     .text :
     {
         KEEP(*(.isr_vector))
-	KEEP(*(.build_info))
+		KEEP(*(.sBuildInfo))
         *(.text*)
 
         KEEP(*(.init))
