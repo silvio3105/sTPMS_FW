@@ -1,7 +1,7 @@
 /**
  * @file TWI.cpp
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief I2C module source file.
+ * @brief TWI module source file.
  * 
  * @copyright Copyright (c) 2025, silvio3105
  * 
@@ -35,13 +35,13 @@
 /**
  * @addtogroup TWI 
  * 
- * I2C module.
+ * TWI module.
  */
 
 
 // ----- NAMESPACES
 /**
- * @brief I2C module namespace.
+ * @brief TWI module namespace.
  * 
  */
 namespace TWI
@@ -49,7 +49,7 @@ namespace TWI
 	// ----- FUNCTION DEFINITIONS
 	Return_t init(void)
 	{
-		// Configure I2C pins
+		// Configure TWI pins
 		/*nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ptsSDAPort, Hardware::ptsSDAPin),
 		NRF_GPIO_PIN_DIR_OUTPUT,
 		NRF_GPIO_PIN_INPUT_DISCONNECT,
@@ -80,7 +80,7 @@ namespace TWI
 			return Return_t::NOK;
 		}
 
-		// Set I2C speed to 100kHz
+		// Set TWI speed to 100kHz
 		nrf_twim_frequency_set(NRF_TWIM0, NRF_TWIM_FREQ_100K);
 
 		// Enable shortcuts

@@ -1,7 +1,7 @@
 /**
  * @file TWI.hpp
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief I2C module header file.
+ * @brief TWI module header file.
  * 
  * @copyright Copyright (c) 2025, silvio3105
  * 
