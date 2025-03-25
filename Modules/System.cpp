@@ -16,6 +16,7 @@
 #include			"nrf_nvic.h"
 #include 			"app_error.h"
 #include 			"nrf_soc.h"
+#include			"nrf_sdh.h"
 
 
 /**
@@ -129,10 +130,13 @@ namespace System
 		sd_nvic_ClearPendingIRQ(FPU_IRQn);		
 
 		sd_power_dcdc_mode_set(NRF_POWER_DCDC_DISABLE);
+		//NRF_POWER->DCDCEN = 0;
 
 		_PRINT("Sleep\n");
 		sd_app_evt_wait();
-
+		//__WFI();
+		
+		//NRF_POWER->DCDCEN = 1;
 		sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
 	}
 
