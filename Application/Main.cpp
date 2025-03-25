@@ -30,6 +30,7 @@
 #include			"Data.hpp"
 #include			"ADC.hpp"
 #include			"sBuildInfo.h"
+#include			"TWI.hpp"
 
 #include 			"nrf_log.h"
 #include 			"nrf_log_ctrl.h"
@@ -119,6 +120,14 @@ int main(void)
 	{
 		_PRINT_ERROR("ADC init fail\n");
 		System::reset(System::Reset_t::ADCInit);
+	}
+
+	
+
+	if (TWI::init() != Return_t::OK)
+	{
+		_PRINT_ERROR("TWI init fail\n");
+		System::reset(System::Reset_t::TWIInit);
 	}
 	
 	ledOff();
