@@ -38,6 +38,9 @@
  * TWI module.
  */
 
+// ----- VARIABLES
+static uint8_t error = 0;
+
 
 // ----- NAMESPACES
 /**
@@ -115,20 +118,53 @@ namespace TWI
 		return Return_t::OK;
 	}
 
-	Return_t send(const uint8_t address, const void* data, const uint16_t len)
+	Return_t write(const uint8_t address, const void* data, const uint16_t len)
 	{
 		nrf_twim_tx_buffer_set(NRF_TWIM0, (const uint8_t*)data, len);
-		nrf_twim_address_set(NRF_TWIM0, address);
+		nrf_twim_address_set(NRF_TWIM0, (address << 1) | 1);
 		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTTX);
+
+		while (NRF_TWIM0->EVENTS_LASTTX == 0)
+		{
+			if (error)
+			{
+				error = 0;
+				nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STOP);
+				return Return_t::NOK;
+			}
+		}
+		NRF_TWIM0->EVENTS_LASTTX = 0;
 		return Return_t::OK;
 	}
 
-	Return_t receive(const uint8_t address, void* output, const uint16_t len)
+	Return_t read(const uint8_t address, void* output, const uint16_t len)
 	{
 		nrf_twim_rx_buffer_set(NRF_TWIM0, (uint8_t*)output, len);
-		nrf_twim_address_set(NRF_TWIM0, address);
-		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTRX);		
+		nrf_twim_address_set(NRF_TWIM0, address << 1);
+		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTRX);	
+		
+		while (NRF_TWIM0->EVENTS_LASTRX == 0)
+		{
+			if (error)
+			{
+				error = 0;
+				nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STOP);
+				return Return_t::NOK;
+			}
+		}
+		NRF_TWIM0->EVENTS_LASTRX = 0;		
 		return Return_t::OK;
+	}
+
+	Return_t isErrorActive(void)
+	{
+		if (error)
+		{
+			error = 0;
+			return Return_t::OK;
+		}
+
+		return Return_t::NOK;
 	}
 };
 
@@ -141,16 +177,19 @@ extern "C"
 
 		if (NRF_TWIM0->EVENTS_LASTRX)
 		{
+			_PRINT("TWI RX done\n");
 			NRF_TWIM0->EVENTS_LASTRX = 0;
 		}
 
 		else if (NRF_TWIM0->EVENTS_LASTTX)
 		{
+			_PRINT("TWI TX done\n");
 			NRF_TWIM0->EVENTS_LASTTX = 0;
 		}
 		
 		else if (NRF_TWIM0->EVENTS_ERROR)
 		{
+			error = 1;
 			_PRINTF_ERROR("TWI error %u\n", nrf_twim_errorsrc_get_and_clear(NRF_TWIM0));
 			NRF_TWIM0->EVENTS_ERROR = 0;
 		}		
