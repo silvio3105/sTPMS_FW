@@ -89,6 +89,9 @@ namespace TWI
 		// Set TWI pins
 		nrf_twim_pins_set(NRF_TWIM0, Hardware::ptsSCLPin, Hardware::ptsSDAPin);
 
+		// Clear TWI errors
+		nrf_twim_errorsrc_get_and_clear(NRF_TWIM0);
+
 		// Enable TWI bus
 		nrf_twim_enable(NRF_TWIM0);
 
