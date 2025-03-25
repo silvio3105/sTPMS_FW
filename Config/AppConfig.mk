@@ -11,6 +11,7 @@ Modules/BLE.cpp \
 Modules/System.cpp \
 Modules/ADC.cpp \
 Modules/TWI.cpp \
+Modules/PTS.cpp \
 
 # APPLICATION C TRANSLATION FILES
 APP_C_FILES = \
