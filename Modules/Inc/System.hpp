@@ -68,8 +68,9 @@ namespace System
 		Unexpected = 20, /**< @brief Reset reason for unexpected reset. */
 		SystemInit = 21, /**< @brief Reset reason for failed system init. */
 		BLEInit = 22, /**< @brief Reset reason for failed BLE init. */
-		SensorInit = 23, /**< @brief Reset reason for failed sensor init. */
+		PTSInit = 23, /**< @brief Reset reason for failed sensor init. */
 		ADCInit = 24, /**< @brief Reset reason for failed ADC init. */
+		TWIInit = 25, /**< @brief Reset reason for failed TWI init. */
 	};
 
 	
