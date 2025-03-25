@@ -31,6 +31,7 @@
 #include			"ADC.hpp"
 #include			"sBuildInfo.h"
 #include			"TWI.hpp"
+#include			"PTS.hpp"
 
 #include 			"nrf_log.h"
 #include 			"nrf_log_ctrl.h"
@@ -91,14 +92,6 @@ int main(void)
 	ledInit();
 	ledOn();
 
-	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin),
-	NRF_GPIO_PIN_DIR_OUTPUT,
-	NRF_GPIO_PIN_INPUT_DISCONNECT,
-	NRF_GPIO_PIN_NOPULL,
-	NRF_GPIO_PIN_S0S1,
-	NRF_GPIO_PIN_NOSENSE);
-	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin), 1);
-
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
@@ -122,12 +115,16 @@ int main(void)
 		System::reset(System::Reset_t::ADCInit);
 	}
 
-	
-
 	if (TWI::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("TWI init fail\n");
 		System::reset(System::Reset_t::TWIInit);
+	}
+
+	if (PTS::init() != Return_t::OK)
+	{
+		_PRINT_ERROR("PTS init fail\n");
+		//System::reset(System::Reset_t::PTSInit);
 	}
 	
 	ledOff();
