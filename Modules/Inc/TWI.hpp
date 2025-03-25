@@ -33,7 +33,10 @@
 namespace TWI
 {
 	// ----- FUNCTION DECLARATIONS
-	
+	Return_t init(void);
+	Return_t deinit(void);
+	Return_t send(const uint8_t address, const void* data, const uint16_t len);
+	Return_t receive(const uint8_t address, const void* output, const uint16_t len);
 };
 
 
