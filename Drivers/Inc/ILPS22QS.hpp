@@ -74,28 +74,28 @@ namespace ILPS22QS
 	#ifdef DEBUG_ILPS22QS
 
 	#ifdef DEBUG_ILPS22QS_VERBOSE
-	DEBUG_VERBOSE_ENABLE();
+	DEBUG_ENABLE_VERBOSE(ILPS22QS);
 	#else // DEBUG_ILPS22QS_VERBOSE
-	DEBUG_VERBOSE_DISABLE();
+	DEBUG_DISABLE_VERBOSE();
 	#endif // DEBUG_ILPS22QS_VERBOSE
 
 	#ifdef DEBUG_ILPS22QS_INFO
-	DEBUG_INFO_ENABLE();
+	DEBUG_ENABLE_INFO(ILPS22QS);
 	#else // DEBUG_ILPS22QS_INFO
-	DEBUG_INFO_DISABLE();
+	DEBUG_DISABLE_INFO();
 	#endif // DEBUG_ILPS22QS_INFO
 
 	#ifdef DEBUG_ILPS22QS_ERROR
-	DEBUG_ERROR_ENABLE();
+	DEBUG_ENABLE_ERROR(ILPS22QS);
 	#else // DEBUG_ILPS22QS_ERROR
-	DEBUG_ERROR_DISABLE();
+	DEBUG_DISABLE_ERROR();
 	#endif // DEBUG_ILPS22QS_ERROR
 
 	#else // DEBUG_ILPS22QS
 
-	DEBUG_VERBOSE_DISABLE();
-	DEBUG_INFO_DISABLE();
-	DEBUG_ERROR_DISABLE();
+	DEBUG_DISABLE_VERBOSE();
+	DEBUG_DISABLE_INFO();
+	DEBUG_DISABLE_ERROR();
 
 	#endif // DEBUG_ILPS22QS
 
@@ -382,8 +382,8 @@ namespace ILPS22QS
 		{
 			semaphore = Semaphore_t::Taken;
 
-			PRINTN("ILPS22QS ", 9);
-			PRINTN("taken\n", 6);
+			ILPS22QS_PRINTN("ILPS22QS ", 9);
+			ILPS22QS_PRINTN("taken\n", 6);
 		}
 
 		/**
@@ -397,8 +397,8 @@ namespace ILPS22QS
 		{
 			semaphore = Semaphore_t::Free;
 
-			PRINTN("ILPS22QS ", 9);
-			PRINTN("free\n", 5);
+			ILPS22QS_PRINTN("ILPS22QS ", 9);
+			ILPS22QS_PRINTN("free\n", 5);
 		}	
 
 		/**
@@ -413,15 +413,15 @@ namespace ILPS22QS
 		 */
 		Return_t init(const InterfaceConfig_s* interfaceCfg = nullptr)
 		{
-			PRINTF_INFO("ILPS22QS ", 9);
-			PRINTF_INFO(version, sizeof(version) - 1);
-			PRINTF_INFO("\n", 1);
+			ILPS22QS_PRINTF_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO(version, sizeof(version) - 1);
+			ILPS22QS_PRINTF_INFO("\n", 1);
 
 			// Check interface object
 			if (interface.check() != Return_t::OK)
 			{
-				PRINTN_ERROR("ILPS22QS ", 9);
-				PRINTN_ERROR("Check fail\n", 11);				
+				ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+				ILPS22QS_PRINTN_ERROR("Check fail\n", 11);				
 				return Return_t::NOK;
 			}
 
@@ -430,8 +430,8 @@ namespace ILPS22QS
 			{
 				if (mspInitHandler() != Return_t::OK)
 				{
-					PRINTN_ERROR("ILPS22QS ", 9);
-					PRINTN_ERROR("MSP init fail\n", 14);
+					ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+					ILPS22QS_PRINTN_ERROR("MSP init fail\n", 14);
 					return Return_t::NOK;
 				}
 			}
@@ -441,8 +441,8 @@ namespace ILPS22QS
 			{
 				if (interfaceConfig(interfaceCfg) != Return_t::OK)
 				{
-					PRINTN_ERROR("ILPS22QS ", 9);
-					PRINTN_ERROR("Cfg fail\n", 9);
+					ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+					ILPS22QS_PRINTN_ERROR("Cfg fail\n", 9);
 					return Return_t::NOK;
 				}
 			}
@@ -453,15 +453,15 @@ namespace ILPS22QS
 			{
 				if (tmp != chipID)
 				{
-					PRINTN_ERROR("ILPS22QS ", 9);
-					PRINTN_ERROR("Invalid ID\n", 11);
+					ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+					ILPS22QS_PRINTN_ERROR("Invalid ID\n", 11);
 					return Return_t::NOK;
 				}		
 			}
 			else
 			{
-				PRINTN_ERROR("ILPS22QS ", 9);
-				PRINTN_ERROR("WhoAmI fail\n", 12);
+				ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+				ILPS22QS_PRINTN_ERROR("WhoAmI fail\n", 12);
 				return Return_t::NOK;
 			}
 
@@ -480,8 +480,8 @@ namespace ILPS22QS
 			// Call deinit handler if provided
 			if (mspDeinitHandler)
 			{
-				PRINTN_ERROR("ILPS22QS ", 9);
-				PRINTN_ERROR("MSP deinit fail\n", 16);
+				ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+				ILPS22QS_PRINTN_ERROR("MSP deinit fail\n", 16);
 				return mspDeinitHandler();
 			}
 
@@ -507,8 +507,8 @@ namespace ILPS22QS
 							((uint8_t)config.resetARP << (uint8_t)InterruptBitmap_t::ResetAutoREFP) |
 							((uint8_t)config.resetAZ << (uint8_t)InterruptBitmap_t::ResetAutoZero);
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("INT cfg set to %02X\n", txBuffer[1]);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("INT cfg set to %02X\n", txBuffer[1]);
 			return writeRegister(txBuffer, 2);
 		}
 
@@ -566,8 +566,8 @@ namespace ILPS22QS
 				return Return_t::NOK;
 			}	
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("Interrupt threshold set to %u\n", threshold);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("Interrupt threshold set to %u\n", threshold);
 			return Return_t::OK;
 		}
 
@@ -632,8 +632,8 @@ namespace ILPS22QS
 
 			pressureScale = scale;
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("Pressure scale set to %02X\n", txBuffer[1]);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("Pressure scale set to %02X\n", txBuffer[1]);
 			return Return_t::OK;
 		}
 
@@ -666,8 +666,8 @@ namespace ILPS22QS
 		 */
 		inline void setTemperatureScale(const TemperatureScale_t scale)
 		{
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("Temp scale set to %c\n", scale == TemperatureScale_t::Celsius ? 'C' : 'F');
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("Temp scale set to %c\n", scale == TemperatureScale_t::Celsius ? 'C' : 'F');
 			temperatureScale = scale;
 		}
 
@@ -685,8 +685,8 @@ namespace ILPS22QS
 			txBuffer[1] = 	((uint8_t)config.average << (uint8_t)Control1Bitmap_t::Average) | 
 							((uint8_t)config.dataRate << (uint8_t)Control1Bitmap_t::OutputDataRate);
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("DO cfg set to %02X\n", txBuffer[1]);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("DO cfg set to %02X\n", txBuffer[1]);
 			return writeRegister(txBuffer, 2);
 		}
 
@@ -728,8 +728,8 @@ namespace ILPS22QS
 			txBuffer[0] = (uint8_t)Register_t::Control2;
 			txBuffer[1] = tmp | (1 << (uint8_t)Control2Bitmap_t::OneShot);
 
-			PRINTN("ILPS22QS ", 9);
-			PRINTN("Measure started\n", 16);
+			ILPS22QS_PRINTN("ILPS22QS ", 9);
+			ILPS22QS_PRINTN("Measure started\n", 16);
 			return writeRegister(txBuffer, 2);
 		}
 
@@ -753,8 +753,8 @@ namespace ILPS22QS
 			tmp &= ~((1 << (uint8_t)Control2Bitmap_t::LowPassFilterConfig) | (1 << (uint8_t)Control2Bitmap_t::LowPassFilterEnable));
 			txBuffer[1] = tmp | (((uint8_t)config.filter << (uint8_t)Control2Bitmap_t::LowPassFilterEnable) | ((uint8_t)config.discard << (uint8_t)Control2Bitmap_t::LowPassFilterConfig));
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("Filter cfg set to %02X\n", txBuffer[1]);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("Filter cfg set to %02X\n", txBuffer[1]);
 			return writeRegister(txBuffer, 2);
 		}
 
@@ -799,8 +799,8 @@ namespace ILPS22QS
 			tmp &= ~(1 << (uint8_t)Control2Bitmap_t::BlockDataUpdate);
 			txBuffer[1] = tmp | ((uint8_t)update << (uint8_t)Control2Bitmap_t::BlockDataUpdate);
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("Data update config set to %02X\n", txBuffer[1]);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("Data update config set to %02X\n", txBuffer[1]);
 			return writeRegister(txBuffer, 2);				
 		}
 
@@ -841,8 +841,8 @@ namespace ILPS22QS
 			txBuffer[0] = (uint8_t)Register_t::Control2;
 			txBuffer[1] = tmp | (1 << (uint8_t)Control2Bitmap_t::Reset);
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTN_INFO("Reset\n", 6);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTN_INFO("Reset\n", 6);
 			return writeRegister(txBuffer, 2);	
 		}
 
@@ -863,8 +863,8 @@ namespace ILPS22QS
 			txBuffer[0] = (uint8_t)Register_t::Control2;
 			txBuffer[1] = tmp | (1 << (uint8_t)Control2Bitmap_t::Boot);
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTN_INFO("Reboot\n", 7);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTN_INFO("Reboot\n", 7);
 			return writeRegister(txBuffer, 2);			
 		}
 
@@ -879,8 +879,8 @@ namespace ILPS22QS
 			txBuffer[0] = (uint8_t)Register_t::AnalogHubDisable;
 			txBuffer[1] = 0;
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTN_INFO("AH disable\n", 11);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTN_INFO("AH disable\n", 11);
 			return writeRegister(txBuffer, 2);
 		}
 
@@ -899,8 +899,8 @@ namespace ILPS22QS
 							((uint8_t)config.interleavedMode << (uint8_t)Control3Bitmap_t::AnalogHubInterleaved) |
 							((uint8_t)config.analogHub << (uint8_t)Control3Bitmap_t::AnalogHubEnable);
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("AH cfg set to %02X\n", txBuffer[1]);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("AH cfg set to %02X\n", txBuffer[1]);
 			return writeRegister(txBuffer, 2);		 
 		}
 
@@ -976,8 +976,8 @@ namespace ILPS22QS
 				return Return_t::NOK;
 			}
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("Pressure offset set to %d\n", offset);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("Pressure offset set to %d\n", offset);
 			return Return_t::OK;		
 		}
 
@@ -1087,8 +1087,8 @@ namespace ILPS22QS
 			static constexpr uint16_t scaleDivider[] = { 4096, 2048 };
 			output = tmp / scaleDivider[(uint8_t)getPressureScale()];
 
-			PRINTN("ILPS22QS ", 9);
-			PRINTF("Pressure %u\n", output);
+			ILPS22QS_PRINTN("ILPS22QS ", 9);
+			ILPS22QS_PRINTF("Pressure %u\n", output);
 			return Return_t::OK;
 		}
 
@@ -1119,8 +1119,8 @@ namespace ILPS22QS
 
 			output = convertTemperature(tmp);
 
-			PRINTN("ILPS22QS ", 9);
-			PRINTF("Temperature %d\n", output);
+			ILPS22QS_PRINTN("ILPS22QS ", 9);
+			ILPS22QS_PRINTF("Temperature %d\n", output);
 			return Return_t::OK;			
 		}
 
@@ -1348,15 +1348,15 @@ namespace ILPS22QS
 			txBuffer[0] = (uint8_t)reg;
 			if (interface.write(txBuffer, 1) != Return_t::OK)
 			{
-				PRINTN_ERROR("ILPS22QS ", 9);
-				PRINTF_ERROR("Register %02X write fail\n", txBuffer[0]);
+				ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+				ILPS22QS_PRINTF_ERROR("Register %02X write fail\n", txBuffer[0]);
 				return Return_t::NOK;
 			}
 
 			if (interface.read(output, len) != Return_t::OK)
 			{
-				PRINTN_ERROR("ILPS22QS ", 9);
-				PRINTF_ERROR("Register %02X read fail\n", txBuffer[0]);
+				ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+				ILPS22QS_PRINTF_ERROR("Register %02X read fail\n", txBuffer[0]);
 				return Return_t::NOK;
 			}
 
@@ -1400,8 +1400,8 @@ namespace ILPS22QS
 			#ifdef DEBUG_ILPS22QS_ERROR
 			if (interface.write(input, len) != Return_t::OK)
 			{
-				PRINTN_ERROR("ILPS22QS ", 9);
-				PRINTF_ERROR("Register write %02X fail\n", input[1]);
+				ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+				ILPS22QS_PRINTF_ERROR("Register write %02X fail\n", input[1]);
 				return Return_t::NOK;
 			}
 
@@ -1438,8 +1438,8 @@ namespace ILPS22QS
 						((uint8_t)config->SPIRead << (uint8_t)(uint8_t)InterfaceBitmap_t::SPIReadEnable) |
 						((uint8_t)config->ssPullUpOff << (uint8_t)(uint8_t)InterfaceBitmap_t::SSPullUpEnable);
 
-			PRINTN_INFO("ILPS22QS ", 9);
-			PRINTF_INFO("Interface cfg set to %02X\n", txBuffer[1]);
+			ILPS22QS_PRINTN_INFO("ILPS22QS ", 9);
+			ILPS22QS_PRINTF_INFO("Interface cfg set to %02X\n", txBuffer[1]);
 			return writeRegister(txBuffer, 2);
 		}
 
@@ -1459,18 +1459,18 @@ namespace ILPS22QS
 				return Return_t::NOK;
 			}
 
-			PRINTN_ERROR("ILPS22QS ", 9);
-			PRINTN_INFO("Scale: ", 7);
+			ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+			ILPS22QS_PRINTN_INFO("Scale: ", 7);
 
 			// Get pressure scale
 			if (tmp & (1 << (uint8_t)(uint8_t)Control2Bitmap_t::FullScale))
 			{
-				PRINTN_INFO("4060hPa\n", 8);
+				ILPS22QS_PRINTN_INFO("4060hPa\n", 8);
 				pressureScale = PressureScale_t::Scale4060hPa;
 			}
 			else
 			{
-				PRINTN_INFO("1260hPa\n", 8);
+				ILPS22QS_PRINTN_INFO("1260hPa\n", 8);
 				pressureScale = PressureScale_t::Scale1260hPa;
 			}
 
@@ -1561,8 +1561,8 @@ namespace ILPS22QS
 				{
 					if ((tickHandler() - tick) > timeout)
 					{
-						PRINTN_ERROR("ILPS22QS ", 9);
-						PRINTN_ERROR("Wait timeout\n", 13);
+						ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
+						ILPS22QS_PRINTN_ERROR("Wait timeout\n", 13);
 						return Return_t::Timeout;
 					}
 				}
