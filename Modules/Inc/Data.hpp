@@ -316,8 +316,8 @@ namespace Data
 		data.setUptime(eeprom->uptime);
 		data.setVoltage(eeprom->lastVoltage);
 		data.setErrorCode(System::Error_t::None);
-		data.setFirmwareVersion(major, minor, build); // SOON: Replace
-		data.setReset(System::Reset_t::Powerup, eeprom->rstCount);
+		data.setFirmwareVersion(major, minor, build);
+		data.setReset(System::getResetReason(), eeprom->rstCount);
 		data.setConfig(AppConfig::hwID, AppConfig::measurePeriod);
 	}
 };

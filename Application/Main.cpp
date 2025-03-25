@@ -114,15 +114,15 @@ int main(void)
 	NRF_GPIO_PIN_NOSENSE);
 	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSCLPort, Hardware::ptsSCLPin), 1);	
 
-	// Init device data and SRAM EEPROM
-	Data::init(data);
-
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("System init fail\n");
 		System::reset(System::Reset_t::SystemInit);
 	}
+
+	// Init device data and SRAM EEPROM
+	Data::init(data);	
 
 	// Init BLE module
 	if (BLE::init() != Return_t::OK)
@@ -139,6 +139,13 @@ int main(void)
 	
 	ledOff();
 	_PRINTF("Reset reason %u\n", System::getResetReason());
+
+	/*while (1)
+	{
+		System::startWakeupTimer();
+		System::sleep();
+		System::feedWatchdog();
+	}*/
 
 	while (1)
 	{
