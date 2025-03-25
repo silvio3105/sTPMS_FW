@@ -121,7 +121,7 @@ namespace TWI
 	Return_t write(const uint8_t address, const void* data, const uint16_t len)
 	{
 		nrf_twim_tx_buffer_set(NRF_TWIM0, (const uint8_t*)data, len);
-		nrf_twim_address_set(NRF_TWIM0, (address << 1) | 1);
+		nrf_twim_address_set(NRF_TWIM0, address);
 		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTTX);
 
 		while (NRF_TWIM0->EVENTS_LASTTX == 0)
@@ -140,7 +140,7 @@ namespace TWI
 	Return_t read(const uint8_t address, void* output, const uint16_t len)
 	{
 		nrf_twim_rx_buffer_set(NRF_TWIM0, (uint8_t*)output, len);
-		nrf_twim_address_set(NRF_TWIM0, address << 1);
+		nrf_twim_address_set(NRF_TWIM0, address);
 		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTRX);	
 		
 		while (NRF_TWIM0->EVENTS_LASTRX == 0)
