@@ -98,22 +98,6 @@ int main(void)
 	NRF_GPIO_PIN_NOSENSE);
 	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin), 1);
 
-	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ptsSDAPort, Hardware::ptsSDAPin),
-	NRF_GPIO_PIN_DIR_OUTPUT,
-	NRF_GPIO_PIN_INPUT_DISCONNECT,
-	NRF_GPIO_PIN_NOPULL,
-	NRF_GPIO_PIN_S0S1,
-	NRF_GPIO_PIN_NOSENSE);
-	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSDAPort, Hardware::ptsSDAPin), 1);
-	
-	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ptsSCLPort, Hardware::ptsSCLPin),
-	NRF_GPIO_PIN_DIR_OUTPUT,
-	NRF_GPIO_PIN_INPUT_DISCONNECT,
-	NRF_GPIO_PIN_NOPULL,
-	NRF_GPIO_PIN_S0S1,
-	NRF_GPIO_PIN_NOSENSE);
-	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSCLPort, Hardware::ptsSCLPin), 1);	
-
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
