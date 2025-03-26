@@ -97,7 +97,7 @@ namespace TWI
 		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STOP);
 		nrf_twim_disable(NRF_TWIM0);
 
-		nrf_gpio_cfg_default(NRF_GPIO_PIN_MAP(Hardware::ptsSCLPin, Hardware::ptsSDAPin));
+		nrf_gpio_cfg_default(NRF_GPIO_PIN_MAP(Hardware::ptsSCLPort, Hardware::ptsSDAPin));
 		nrf_gpio_cfg_default(NRF_GPIO_PIN_MAP(Hardware::ptsSDAPort, Hardware::ptsSDAPin));
 
 		return Return_t::OK;
