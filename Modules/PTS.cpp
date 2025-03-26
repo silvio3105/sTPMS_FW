@@ -44,6 +44,8 @@ ILPS22QS::Return_t msp(void);
 
 // ----- VARIABLES
 ILPS22QS::I2C Sensor = ILPS22QS::I2C(read, write, msp, msp); /**< @brief ILPS22QS object. */
+static uint16_t pressure = 0; /**< @brief Measured pressure in mbar. */
+static int16_t temperature = 0; /**< @brief Measured temperature in centi degrees Celsius. */
 
 
 // ----- NAMESPACES
@@ -99,6 +101,65 @@ namespace PTS
 		}
 
 		return Return_t::OK;
+	}
+
+	Return_t measure(void)
+	{
+		if (Sensor.measure() != ILPS22QS::Return_t::OK)
+		{
+			// SOON: Add error code
+			_PRINT_ERROR("Measure start fail\n");
+			return Return_t::NOK;
+		}
+
+		ILPS22QS::DataStatus_s status;
+		while (1)
+		{
+			if (Sensor.getDataStatus(status) != ILPS22QS::Return_t::OK)
+			{
+				// SOON: Add error code
+				_PRINT_ERROR("Measure status fail\n");
+				return Return_t::NOK;
+			}
+
+			if (status.pressureAvailable && status.temperatureAvailable)
+			{
+				if (Sensor.getPressure(pressure) != ILPS22QS::Return_t::OK)
+				{
+					_PRINT_ERROR("Pressure get fail\n");
+					// SOON: Add error code
+					return Return_t::NOK;
+				}
+				else
+				{
+					_PRINTF_INFO("Pressure %umbar\n", getPressure());
+				}
+
+				if (Sensor.getTemperature(temperature) != ILPS22QS::Return_t::OK)
+				{
+					_PRINT_ERROR("Temperature get fail\n");
+					// SOON: Add error code
+					return Return_t::NOK;
+				}
+				else
+				{
+					_PRINTF_INFO("Temperature %dcdegC\n", getTemperature());
+				}
+				
+				break;
+			}
+		}
+		return Return_t::OK;
+	}
+
+	uint16_t getPressure(void)
+	{
+		return pressure;
+	}
+
+	int16_t getTemperature(void)
+	{
+		return temperature;
 	}
 };
 

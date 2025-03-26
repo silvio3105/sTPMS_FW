@@ -34,6 +34,9 @@ namespace PTS
 {
 	// ----- FUNCTION DECLARATIONS
 	Return_t init(void);
+	Return_t measure(void);
+	uint16_t getPressure(void);
+	int16_t getTemperature(void);
 };
 
 
