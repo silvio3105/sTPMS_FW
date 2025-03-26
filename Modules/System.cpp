@@ -130,12 +130,10 @@ namespace System
 		sd_nvic_ClearPendingIRQ(FPU_IRQn);		
 
 		TWI::deinit();
-		//sd_power_dcdc_mode_set(NRF_POWER_DCDC_DISABLE);
 
 		_PRINT("Sleep\n");
 		sd_app_evt_wait();
 
-		//sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
 		TWI::init();
 	}
 
@@ -197,14 +195,16 @@ static inline void testXTAL(void)
 	NRF_CLOCK->TASKS_HFCLKSTART = 1;
 	while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
 	NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;	
-	_PRINT("HFXO started\n");
+	NRF_CLOCK->TASKS_HFCLKSTOP = 1;
+	_PRINT("HFXO works\n");
 
 	_PRINT("Wait for LFXO\n");
 	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
 	NRF_CLOCK->TASKS_LFCLKSTART = 1;
 	while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0);
-	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;	
-	_PRINT("LFXO started\n");		
+	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+	NRF_CLOCK->TASKS_LFCLKSTOP = 1;
+	_PRINT("LFXO works\n");		
 	#endif // DEBUG
 }
 
