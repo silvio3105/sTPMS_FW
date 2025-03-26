@@ -48,7 +48,7 @@ namespace Hardware
 	static constexpr uint8_t ptsSCLPort = 0; /**< @brief Pressure and temperature sensor I2C SCL GPIO port. */
 	static constexpr uint8_t ptsSCLPin = 7; /**< @brief Pressure and temperature sensor I2C SCL GPIO pin. */
 	static constexpr uint8_t ptsSDAPort = 0; /**< @brief Pressure and temperature sensor I2C SDA GPIO port. */
-	static constexpr uint8_t ptsSDAPin = 8; /**< @brief Pressure and temperature sensor I2C SDA GPIO pin. */
+	static constexpr uint8_t ptsSDAPin = 6; /**< @brief Pressure and temperature sensor I2C SDA GPIO pin. */
 	static constexpr uint8_t ptsSelectPort = 0; /**< @brief Pressure and temperature sensor select GPIO port. */
 	static constexpr uint8_t ptsSelectPin = 5; /**< @brief Pressure and temperature sensor select GPIO pin. */
 	static constexpr uint8_t ledPort = 0; /**< @brief LED GPIO port. */
