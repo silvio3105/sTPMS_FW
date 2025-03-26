@@ -11,6 +11,7 @@
 #include			"System.hpp"
 #include			"Data.hpp"
 #include			"BLE.hpp"
+#include			"TWI.hpp"
 
 #include			"nrf.h"
 #include			"nrf_nvic.h"
@@ -129,15 +130,14 @@ namespace System
 		(void) __get_FPSCR();
 		sd_nvic_ClearPendingIRQ(FPU_IRQn);		
 
-		sd_power_dcdc_mode_set(NRF_POWER_DCDC_DISABLE);
-		//NRF_POWER->DCDCEN = 0;
+		TWI::deinit();
+		//sd_power_dcdc_mode_set(NRF_POWER_DCDC_DISABLE);
 
 		_PRINT("Sleep\n");
 		sd_app_evt_wait();
-		//__WFI();
-		
-		//NRF_POWER->DCDCEN = 1;
-		sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
+
+		//sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
+		TWI::init();
 	}
 
 	/**
