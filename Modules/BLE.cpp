@@ -140,15 +140,7 @@ namespace BLE
 		{
 			APP_ERROR_CHECK(ret);
 			return Return_t::NOK;
-		}		
-
-		// Request HFXO
-		ret = sd_clock_hfclk_request();
-		if (ret != NRF_SUCCESS)
-		{
-			APP_ERROR_CHECK(ret);
-			return Return_t::NOK;
-		}		
+		}
 
 		// Init advertise
 		return advInit();
