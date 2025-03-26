@@ -56,9 +56,45 @@ namespace PTS
 	// ----- FUNCTION DEFINITIONS
 	Return_t init(void)
 	{
+		// Init PTS
 		if (Sensor.init() != ILPS22QS::Return_t::OK)
 		{
 			_PRINT_ERROR("Sensor init fail\n");
+			return Return_t::NOK;
+		}
+
+		// Configure PTS
+		if (Sensor.disableAnalogHub() != ILPS22QS::Return_t::OK)
+		{	
+			_PRINT_ERROR("Analog hub disable fail\n");
+			return Return_t::NOK;
+		}
+
+		if (Sensor.setPressureScale(ILPS22QS::PressureScale_t::Scale4060hPa) != ILPS22QS::Return_t::OK)
+		{
+			_PRINT_ERROR("Pressure scale set fail\n");
+			return Return_t::NOK;
+		}
+
+		static const ILPS22QS::FilterConfig_s filterCfg =
+		{	
+			.discard = ILPS22QS::FilterDiscard_t::Discard6Samples,
+			.filter = ILPS22QS::State_t::Enable
+		};
+		if (Sensor.setFilterConfig(filterCfg) != ILPS22QS::Return_t::OK)
+		{
+			_PRINT_ERROR("Filter config fail\n");
+			return Return_t::NOK;
+		}
+
+		static const ILPS22QS::DataOutputConfig_s dataOutputCfg = 
+		{
+			.dataRate = ILPS22QS::OutputDataRate_t::OneShot,
+			.average = ILPS22QS::Average_t::Average16
+		};
+		if (Sensor.setDataOutputConfig(dataOutputCfg) != ILPS22QS::Return_t::OK)
+		{
+			_PRINT_ERROR("Data output config fail\n");
 			return Return_t::NOK;
 		}
 
@@ -103,7 +139,7 @@ ILPS22QS::Return_t msp(void)
 	NRF_GPIO_PIN_S0S1,
 	NRF_GPIO_PIN_NOSENSE);
 	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin), 1);
-	
+
 	return ILPS22QS::Return_t::OK;
 }
 
