@@ -62,7 +62,7 @@ enum class State_t : uint8_t
 
 // ----- VARIABLES
 static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
-static State_t state = State_t::Advertise; /**< @brief Application state. */
+static State_t state = State_t::Measure; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
 
@@ -130,6 +130,11 @@ int main(void)
 	ledOff();
 	_PRINTF("Reset reason %u\n", System::getResetReason());
 
+	if (System::getResetReason() != System::Reset_t::Powerup)
+	{
+		state = State_t::Advertise;
+	}
+
 	/*while (1)
 	{
 		System::startWakeupTimer();
@@ -159,12 +164,17 @@ int main(void)
 				while (ADC::isDone() != Return_t::OK);
 				data.setVoltage(ADC::getVoltage());
 
-				// SOON: Replace with real stuff
-				data.setPressure(1013);
-				data.setTemperature(2052);
-			
-				// SOON: Add measure stuff
-				state = State_t::Advertise;
+				// Measure PTS
+				if (PTS::measure() == Return_t::OK)
+				{
+					data.setPressure(PTS::getPressure());
+					data.setTemperature(PTS::getTemperature());
+				}
+				else
+				{
+					data.setPressure(0);
+					data.setTemperature(0);
+				}
 
 				// Turn off the LED if device if powered on
 				if (System::getResetReason() == System::Reset_t::Powerup)
@@ -189,6 +199,8 @@ int main(void)
 					data.increaseUptime();
 					_PRINT_INFO("Uptime++\n");
 				}
+
+				state = State_t::Advertise;
 				break;
 			}
 
