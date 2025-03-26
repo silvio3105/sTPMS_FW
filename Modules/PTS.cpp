@@ -94,6 +94,8 @@ ILPS22QS::Return_t write(const uint8_t address, void* data, const uint8_t len, c
 
 ILPS22QS::Return_t msp(void)
 {
+	_PRINT("ILPS22QS msp init\n");
+
 	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin),
 	NRF_GPIO_PIN_DIR_OUTPUT,
 	NRF_GPIO_PIN_INPUT_DISCONNECT,
@@ -101,6 +103,7 @@ ILPS22QS::Return_t msp(void)
 	NRF_GPIO_PIN_S0S1,
 	NRF_GPIO_PIN_NOSENSE);
 	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin), 1);
+	
 	return ILPS22QS::Return_t::OK;
 }
 
