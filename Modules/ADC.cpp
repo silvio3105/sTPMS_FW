@@ -146,6 +146,7 @@ extern "C"
 	 */
 	void SAADC_IRQHandler(void)
 	{
+		_PRINT("ADC IRQ\n");
 		sd_nvic_ClearPendingIRQ(SAADC_IRQn);
 
 		if (NRF_SAADC->EVENTS_END)
