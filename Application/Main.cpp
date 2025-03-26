@@ -92,15 +92,15 @@ int main(void)
 	ledInit();
 	ledOn();
 
+	// Init device data and SRAM EEPROM
+	Data::init(data);
+
 	// Init system
 	if (System::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("System init fail\n");
 		System::reset(System::Reset_t::SystemInit);
-	}
-
-	// Init device data and SRAM EEPROM
-	Data::init(data);	
+	}	
 
 	// Init BLE module
 	if (BLE::init() != Return_t::OK)
@@ -153,7 +153,7 @@ int main(void)
 				// Turn on the LED if device is powered on
 				if (System::getResetReason() == System::Reset_t::Powerup)
 				{
-					if (ledMeasureCount < AppConfig::ledBlinkCount)
+					if (ledMeasureCount < AppConfig::ledBlinkCount + 1)
 					{
 						ledOn();
 					}
@@ -179,7 +179,7 @@ int main(void)
 				// Turn off the LED if device if powered on
 				if (System::getResetReason() == System::Reset_t::Powerup)
 				{
-					if (ledMeasureCount < AppConfig::ledBlinkCount)
+					if (ledMeasureCount < AppConfig::ledBlinkCount + 1)
 					{
 						for (uint32_t i = 0; i < 0xFFF8; i++)
 						{
