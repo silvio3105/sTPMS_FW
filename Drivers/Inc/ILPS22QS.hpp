@@ -454,7 +454,7 @@ namespace ILPS22QS
 				if (tmp != chipID)
 				{
 					ILPS22QS_PRINTN_ERROR("ILPS22QS ", 9);
-					ILPS22QS_PRINTN_ERROR("Invalid ID\n", 11);
+					ILPS22QS_PRINTF_ERROR("Invalid ID %02X\n", tmp);
 					return Return_t::NOK;
 				}		
 			}
