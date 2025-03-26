@@ -85,7 +85,6 @@ namespace System
 		// Set counter resolution of 125ms
 		NRF_RTC2->PRESCALER = 4095;
 
-		startWakeupTimer();
 		return Return_t::OK;
 	}
 
