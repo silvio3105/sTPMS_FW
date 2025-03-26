@@ -124,7 +124,7 @@ int main(void)
 	if (PTS::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("PTS init fail\n");
-		//System::reset(System::Reset_t::PTSInit);
+		System::reset(System::Reset_t::PTSInit);
 	}
 	
 	ledOff();
