@@ -26,6 +26,7 @@
 #include			"ADC.hpp"
 
 #include			"nrf.h"
+#include			"nrf_saadc.h"
 #include			"nrf_nvic.h"
 #include			"sdk_errors.h"
 #include			"app_error.h"
@@ -59,22 +60,25 @@ namespace ADC
 	Return_t init(void)
 	{
 		// Enable END event
-		NRF_SAADC->INTEN = 1 << 1;
+		nrf_saadc_int_enable(NRF_SAADC_INT_END);
+		nrf_saadc_resolution_set(NRF_SAADC_RESOLUTION_12BIT);
+		nrf_saadc_oversample_set(NRF_SAADC_OVERSAMPLE_16X);
+		nrf_saadc_buffer_init((nrf_saadc_value_t*)&adcRaw, 1);
 
-		// Configure CH0 to VDD (Vref_int, 1/6 input gain, burst enabled)
-		NRF_SAADC->CH[0].PSELN = 0;
-		NRF_SAADC->CH[0].PSELP = 9;
-		NRF_SAADC->CH[0].CONFIG = (2 << 16) | (1 << 24);
-
-		// Set 12-bit resolution
-		NRF_SAADC->RESOLUTION = 2;
-
-		// Configure oversampling
-		NRF_SAADC->OVERSAMPLE = 4;
-
-		// Set output buffer
-		NRF_SAADC->RESULT.PTR = (uint32_t)&adcRaw;
-		NRF_SAADC->RESULT.MAXCNT = 1;
+		// Configure ADC channel
+		static const nrf_saadc_channel_config_t chConfig =
+		{
+			.resistor_p = NRF_SAADC_RESISTOR_DISABLED,
+			.resistor_n = NRF_SAADC_RESISTOR_DISABLED,
+			.gain = NRF_SAADC_GAIN1_6,
+			.reference = NRF_SAADC_REFERENCE_INTERNAL,
+			.acq_time = NRF_SAADC_ACQTIME_40US,
+			.mode = NRF_SAADC_MODE_SINGLE_ENDED,
+			.burst = NRF_SAADC_BURST_ENABLED,
+			.pin_p = NRF_SAADC_INPUT_VDD,
+			.pin_n = NRF_SAADC_INPUT_DISABLED		
+		};
+		nrf_saadc_channel_init(0, &chConfig);
 
 		// Enable ADC IRQ
 		ret_code_t ret = sd_nvic_SetPriority(SAADC_IRQn, 3);
@@ -103,9 +107,10 @@ namespace ADC
 	{
 		voltage = 0;
 		adcRaw = 0;
-		NRF_SAADC->ENABLE = 1;
-		NRF_SAADC->TASKS_START = 1;
-		NRF_SAADC->TASKS_SAMPLE = 1;
+
+		nrf_saadc_enable();
+		nrf_saadc_task_trigger(NRF_SAADC_TASK_START);
+		nrf_saadc_task_trigger(NRF_SAADC_TASK_SAMPLE);
 	}
 
 	/**
@@ -149,12 +154,13 @@ extern "C"
 		_PRINT("ADC IRQ\n");
 		sd_nvic_ClearPendingIRQ(SAADC_IRQn);
 
-		if (NRF_SAADC->EVENTS_END)
+		if (nrf_saadc_event_check(NRF_SAADC_EVENT_END))
 		{
+			nrf_saadc_event_clear(NRF_SAADC_EVENT_END);
+			nrf_saadc_task_trigger(NRF_SAADC_TASK_STOP);
+			nrf_saadc_disable();
+
 			voltage = (600 * ((adcRaw * 1000) / 4096) * 6) / 1000;
-			NRF_SAADC->EVENTS_END = 0;
-			NRF_SAADC->TASKS_STOP = 1;
-			NRF_SAADC->ENABLE = 0;
 			_PRINTF("ADC %u %u\n", adcRaw, voltage);
 		}
 	}
