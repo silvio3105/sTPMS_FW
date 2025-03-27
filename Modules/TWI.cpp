@@ -82,6 +82,8 @@ namespace TWI
 		// Set TWI speed to 100kHz
 		nrf_twim_frequency_set(NRF_TWIM0, NRF_TWIM_FREQ_100K);
 
+		nrf_twim_int_enable(NRF_TWIM0, NRF_TWIM_INT_ERROR_MASK);
+
 		// Set TWI pins
 		nrf_twim_pins_set(NRF_TWIM0, Hardware::ptsSCLPin, Hardware::ptsSDAPin);
 
@@ -109,8 +111,7 @@ namespace TWI
 			return Return_t::NOK;
 		}
 
-		nrf_twim_int_disable(NRF_TWIM0, NRF_TWIM_INT_ERROR_MASK | NRF_TWIM_INT_LASTTX_MASK | NRF_TWIM_INT_LASTRX_MASK);
-
+		nrf_twim_int_disable(NRF_TWIM0, NRF_TWIM_INT_ERROR_MASK);
 		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STOP);
 		nrf_twim_disable(NRF_TWIM0);
 
@@ -136,17 +137,16 @@ namespace TWI
 		nrf_twim_tx_buffer_set(NRF_TWIM0, (const uint8_t*)data, len);
 		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTTX);
 
-		while (NRF_TWIM0->EVENTS_LASTTX == 0)
+		while (!nrf_twim_event_check(NRF_TWIM0, NRF_TWIM_EVENT_LASTTX))
 		{
-			if (error)
+			if (isErrorActive() == Return_t::OK)
 			{
-				error = 0;
 				nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STOP);
 				return Return_t::NOK;
 			}
 		}
 
-		NRF_TWIM0->EVENTS_LASTTX = 0;		
+		nrf_twim_event_clear(NRF_TWIM0, NRF_TWIM_EVENT_LASTTX);		
 		return Return_t::OK;
 	}
 
@@ -164,20 +164,19 @@ namespace TWI
 	{
 		nrf_twim_address_set(NRF_TWIM0, address);
 		nrf_twim_rx_buffer_set(NRF_TWIM0, (uint8_t*)output, len);
-		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTRX);
 		nrf_twim_shorts_enable(NRF_TWIM0, NRF_TWIM_SHORT_LASTRX_STOP_MASK);
+		nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STARTRX);
 
-		while (NRF_TWIM0->EVENTS_STOPPED == 0)
+		while (!nrf_twim_event_check(NRF_TWIM0, NRF_TWIM_EVENT_STOPPED))
 		{
-			if (error)
+			if (isErrorActive() == Return_t::OK)
 			{
-				error = 0;
 				nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STOP);
 				return Return_t::NOK;
 			}
 		}
 
-		NRF_TWIM0->EVENTS_STOPPED = 0;
+		nrf_twim_event_clear(NRF_TWIM0, NRF_TWIM_EVENT_STOPPED);
 		return Return_t::OK;
 	}
 };
@@ -214,11 +213,11 @@ extern "C"
 	{
 		sd_nvic_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
 
-		if (NRF_TWIM0->EVENTS_ERROR)
+		if (nrf_twim_event_check(NRF_TWIM0, NRF_TWIM_EVENT_ERROR))
 		{
 			error = 1;
 			_PRINTF_ERROR("TWI error %u\n", nrf_twim_errorsrc_get_and_clear(NRF_TWIM0));
-			NRF_TWIM0->EVENTS_ERROR = 0;
+			nrf_twim_event_clear(NRF_TWIM0, NRF_TWIM_EVENT_ERROR);
 			nrf_twim_task_trigger(NRF_TWIM0, NRF_TWIM_TASK_STOP);
 		}		
 	}	
