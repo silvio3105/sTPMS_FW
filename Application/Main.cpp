@@ -197,7 +197,7 @@ int main(void)
 				// Advertise sTPMS data
 				if (BLE::advertise(&data, sizeof(data)) == Return_t::OK)
 				{
-					while (BLE::isAdvertiseDone() == Return_t::OK);	
+					while (BLE::isAdvertiseDone() != Return_t::OK);	
 				}
 				else
 				{
