@@ -35,7 +35,7 @@
 /**
  * @addtogroup TWI 
  * 
- * TWI module.
+ * TWI0 module with basic functions.
  */
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -50,7 +50,6 @@ static volatile uint8_t error = 0; /**< @brief TWI bus error flag. */
 /**
  * @brief TWI module namespace.
  * 
- * Only for TWIM0.
  */
 namespace TWI
 {
