@@ -197,10 +197,14 @@ int main(void)
 				_PRINT_INFO("--- ADVERTISE\n");
 
 				// Advertise sTPMS data
-				BLE::advertise(&data, sizeof(data));
-
-				// Wait for advertise to end
-				while (BLE::isAdvertiseDone() == Return_t::OK);		
+				if (BLE::advertise(&data, sizeof(data)) == Return_t::OK)
+				{
+					while (BLE::isAdvertiseDone() == Return_t::OK);	
+				}
+				else
+				{
+					// SOON: Add error
+				}
 
 				// Feed the dog
 				System::feedWatchdog();
@@ -256,12 +260,7 @@ void sDebug::out(const char* string, const uint16_t len)
  */
 static inline void ledInit(void)
 {
-	nrf_gpio_cfg(NRF_GPIO_PIN_MAP(Hardware::ledPort, Hardware::ledPin),
-	NRF_GPIO_PIN_DIR_OUTPUT,
-	NRF_GPIO_PIN_INPUT_DISCONNECT,
-	NRF_GPIO_PIN_NOPULL,
-	NRF_GPIO_PIN_S0S1,
-	NRF_GPIO_PIN_NOSENSE);
+	nrf_gpio_cfg_output(NRF_GPIO_PIN_MAP(Hardware::ledPort, Hardware::ledPin));
 	ledOff();
 }
 
