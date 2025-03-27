@@ -86,7 +86,7 @@ int main(void)
 	NRF_LOG_DEFAULT_BACKENDS_INIT();
 	#endif // DEBUG
 
-	_PRINTF("%s %s\n%s\n%s %s\n", SBI_APP_NAME, SBI_APP_VER, SBI_APP_HW, SBI_APP_DATE, SBI_APP_TIME);
+	_PRINTF("\n\n%s %s\n%s\n%s %s\n\n", SBI_APP_NAME, SBI_APP_VER, SBI_APP_HW, SBI_APP_DATE, SBI_APP_TIME);
 
 	// LED init
 	ledInit();
@@ -129,18 +129,6 @@ int main(void)
 	
 	ledOff();
 	_PRINTF("Reset reason %u\n", System::getResetReason());
-
-	if (System::getResetReason() != System::Reset_t::Powerup)
-	{
-		state = State_t::Advertise;
-	}
-
-	/*while (1)
-	{
-		System::startWakeupTimer();
-		System::sleep();
-		System::feedWatchdog();
-	}*/
 
 	while (1)
 	{
