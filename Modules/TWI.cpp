@@ -38,18 +38,29 @@
  * TWI module.
  */
 
+// ----- STATIC FUNCTION DECLARATIONS
+static Return_t isErrorActive(void);
+
+
 // ----- VARIABLES
-static uint8_t error = 0;
+static volatile uint8_t error = 0; /**< @brief TWI bus error flag. */
 
 
 // ----- NAMESPACES
 /**
  * @brief TWI module namespace.
  * 
+ * Only for TWIM0.
  */
 namespace TWI
 {
 	// ----- FUNCTION DEFINITIONS
+	/**
+	 * @brief Init TWI bus.
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success.
+	 */
 	Return_t init(void)
 	{
 		// Enable interrupts
@@ -83,6 +94,12 @@ namespace TWI
 		return Return_t::OK;
 	}
 
+	/**
+	 * @brief Deinit TWI bus.
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success.
+	 */
 	Return_t deinit(void)
 	{
 		ret_code_t ret = sd_nvic_DisableIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
@@ -103,6 +120,16 @@ namespace TWI
 		return Return_t::OK;
 	}
 
+	/**
+	 * @brief Write to TWI bus.
+	 * 
+	 * @param address Address of a slave on TWI bus.
+	 * @param data Pointer to data to write.
+	 * @param len Length of \c data
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success.
+	 */
 	Return_t write(const uint8_t address, const void* data, const uint16_t len)
 	{
 		nrf_twim_address_set(NRF_TWIM0, address);
@@ -123,6 +150,16 @@ namespace TWI
 		return Return_t::OK;
 	}
 
+	/**
+	 * @brief Read from TWI bus.
+	 * 
+	 * @param address Address of a slave to read from.
+	 * @param output Pointer to output.
+	 * @param len Number of bytes to read.
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success.
+	 */
 	Return_t read(const uint8_t address, void* output, const uint16_t len)
 	{
 		nrf_twim_address_set(NRF_TWIM0, address);
@@ -143,22 +180,36 @@ namespace TWI
 		NRF_TWIM0->EVENTS_STOPPED = 0;
 		return Return_t::OK;
 	}
-
-	Return_t isErrorActive(void)
-	{
-		if (error)
-		{
-			error = 0;
-			return Return_t::OK;
-		}
-
-		return Return_t::NOK;
-	}
 };
 
 
+// ----- STATIC FUNCTION DEFINITIONS
+/**
+ * @brief Check is TWI bus error active.
+ * 
+ * @return \c Return_t::NOK no error on TWI bus.
+ * @return \c Return_t::OK error on TWI bus. 
+ */
+static Return_t isErrorActive(void)
+{
+	if (error)
+	{
+		error = 0;
+		return Return_t::OK;
+	}
+
+	return Return_t::NOK;
+}
+
+
+// ----- INTERRUPTS
 extern "C"
 {
+	/**
+	 * @brief TWI0 bus interrupt handler.
+	 * 
+	 * @return No return value.
+	 */
 	void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void)
 	{
 		sd_nvic_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);

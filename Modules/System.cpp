@@ -23,7 +23,7 @@
 /**
  * @addtogroup System
  * 
- * System module
+ * System module.
  * @{
  */
 

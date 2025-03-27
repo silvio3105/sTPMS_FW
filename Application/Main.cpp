@@ -61,7 +61,7 @@ enum class State_t : uint8_t
 
 
 // ----- VARIABLES
-static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data to advertise. */
+static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data object. */
 static State_t state = State_t::Measure; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
@@ -109,12 +109,6 @@ int main(void)
 		System::reset(System::Reset_t::BLEInit);
 	}
 
-	if (ADC::init() != Return_t::OK)
-	{
-		_PRINT_ERROR("ADC init fail\n");
-		System::reset(System::Reset_t::ADCInit);
-	}
-
 	if (TWI::init() != Return_t::OK)
 	{
 		_PRINT_ERROR("TWI init fail\n");
@@ -125,6 +119,12 @@ int main(void)
 	{
 		_PRINT_ERROR("PTS init fail\n");
 		System::reset(System::Reset_t::PTSInit);
+	}
+
+	if (ADC::init() != Return_t::OK)
+	{
+		_PRINT_ERROR("ADC init fail\n");
+		// SOON: Raise error
 	}
 	
 	ledOff();
@@ -138,10 +138,10 @@ int main(void)
 			{
 				_PRINT_INFO("--- MEASURE\n");
 
-				// Turn on the LED if device is powered on
+				// Turn on the LED
 				if (System::getResetReason() == System::Reset_t::Powerup)
 				{
-					if (ledMeasureCount < AppConfig::ledBlinkCount + 1)
+					if (ledMeasureCount < AppConfig::ledBlinkCount + 1) // + 1 because device will do first measure right after powerup
 					{
 						ledOn();
 					}
@@ -164,12 +164,12 @@ int main(void)
 					data.setTemperature(0);
 				}
 
-				// Turn off the LED if device if powered on
+				// Turn off the LED
 				if (System::getResetReason() == System::Reset_t::Powerup)
 				{
-					if (ledMeasureCount < AppConfig::ledBlinkCount + 1)
+					if (ledMeasureCount < AppConfig::ledBlinkCount + 1) // + 1 because device will do first measure right after powerup
 					{
-						for (uint32_t i = 0; i < 0xFFF8; i++)
+						for (uint32_t i = 0; i < 0xFFF; i++)
 						{
 							(void)i;
 						}
@@ -221,16 +221,16 @@ int main(void)
 
 				// Put device to sleep
 				System::sleep();
+
+				// Woken by RTC2
+				if (System::isWoken() == Return_t::OK)
+				{
+					wakeupSet = 0;
+					state = State_t::Measure;
+				}					
 				break;
 			}
-		}
-
-		// Woken by RTC2
-		if (System::isWoken() == Return_t::OK)
-		{
-			wakeupSet = 0;
-			state = State_t::Measure;
-		}		
+		}	
 	}
 }
 

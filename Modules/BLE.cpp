@@ -66,7 +66,7 @@ static ble_gap_adv_data_t gapAdvData = /**< @brief Advertise and scan response d
 		.len = 0
 	}
 };
-static uint8_t advDone = 0;
+static uint8_t advDone = 0; /**< @brief Advertise done flag. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -146,6 +146,12 @@ namespace BLE
 		return advInit();
 	}
 
+	/**
+	 * @brief Deinit BLE module.
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success.
+	 */
 	Return_t deinit(void)
 	{
 		ret_code_t ret = nrf_sdh_disable_request();

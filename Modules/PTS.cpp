@@ -56,6 +56,12 @@ static int16_t temperature = 0; /**< @brief Measured temperature in centi degree
 namespace PTS
 {
 	// ----- FUNCTION DEFINITIONS
+	/**
+	 * @brief Init and configure PTS.
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success.
+	 */
 	Return_t init(void)
 	{
 		// Init PTS
@@ -103,6 +109,12 @@ namespace PTS
 		return Return_t::OK;
 	}
 
+	/**
+	 * @brief Measure pressure and temperature.
+	 * 
+	 * @return \c Return_t::NOK on fail.
+	 * @return \c Return_t::OK on success. 
+	 */
 	Return_t measure(void)
 	{
 		if (Sensor.measure() != ILPS22QS::Return_t::OK)
@@ -122,13 +134,15 @@ namespace PTS
 				return Return_t::NOK;
 			}
 
+			// Wait for both measurments
 			if (status.pressureAvailable && status.temperatureAvailable)
 			{
+				uint8_t fail = 0;
+
 				if (Sensor.getPressure(pressure) != ILPS22QS::Return_t::OK)
 				{
 					_PRINT_ERROR("Pressure get fail\n");
-					// SOON: Add error code
-					return Return_t::NOK;
+					fail = 1;
 				}
 				else
 				{
@@ -138,25 +152,40 @@ namespace PTS
 				if (Sensor.getTemperature(temperature) != ILPS22QS::Return_t::OK)
 				{
 					_PRINT_ERROR("Temperature get fail\n");
-					// SOON: Add error code
-					return Return_t::NOK;
+					fail = 1;
 				}
 				else
 				{
 					_PRINTF_INFO("Temperature %dcdegC\n", getTemperature());
 				}
 				
+				if (fail)
+				{
+					// SOON: Add error code for partial measurment
+				}
+
 				break;
 			}
 		}
+
 		return Return_t::OK;
 	}
 
+	/**
+	 * @brief Get measured pressure.
+	 * 
+	 * @return Measured pressure in mbar. 
+	 */
 	uint16_t getPressure(void)
 	{
 		return pressure;
 	}
 
+	/**
+	 * @brief Get measured temperature.
+	 * 
+	 * @return Measured temperature in centidegrees Celsius.
+	 */
 	int16_t getTemperature(void)
 	{
 		return temperature;
@@ -165,6 +194,17 @@ namespace PTS
 
 
 // ----- STATIC FUNCTION DEFINITIONS
+/**
+ * @brief TWI read handler for ILPS22QS.
+ * 
+ * @param address TWI address of ILPS22QS.
+ * @param data Pointer to output buffer.
+ * @param len Length of \c data
+ * @param timeout Operation timeout in ms.
+ * 
+ * @return \c ILPS22QS::Return_t::NOK on fail.
+ * @return \c ILPS22QS::Return_t::OK on success.
+ */
 ILPS22QS::Return_t read(const uint8_t address, void* data, const uint8_t len, const uint8_t timeout)
 {
 	(void)timeout;
@@ -177,6 +217,17 @@ ILPS22QS::Return_t read(const uint8_t address, void* data, const uint8_t len, co
 	return ILPS22QS::Return_t::OK;
 }
 
+/**
+ * @brief TWI write handler for ILPS22QS.
+ * 
+ * @param address TWI address of ILPS22QS.
+ * @param data Pointer to data to write.
+ * @param len Length of \c data
+ * @param timeout Operation timeout in ms.
+ * 
+ * @return \c ILPS22QS::Return_t::NOK on fail.
+ * @return \c ILPS22QS::Return_t::OK on success.
+ */
 ILPS22QS::Return_t write(const uint8_t address, void* data, const uint8_t len, const uint8_t timeout)
 {
 	(void)timeout;
@@ -189,6 +240,12 @@ ILPS22QS::Return_t write(const uint8_t address, void* data, const uint8_t len, c
 	return ILPS22QS::Return_t::OK;	
 }
 
+/**
+ * @brief ILPS22QS MSP init and deinit handler.
+ * 
+ * @return \c ILPS22QS::Return_t::NOK on fail.
+ * @return \c ILPS22QS::Return_t::OK on success.
+ */
 ILPS22QS::Return_t msp(void)
 {
 	_PRINT("ILPS22QS msp init\n");
@@ -199,6 +256,8 @@ ILPS22QS::Return_t msp(void)
 	NRF_GPIO_PIN_NOPULL,
 	NRF_GPIO_PIN_S0S1,
 	NRF_GPIO_PIN_NOSENSE);
+
+	// Set ILPS22QS in TWI mode
 	nrf_gpio_pin_write(NRF_GPIO_PIN_MAP(Hardware::ptsSelectPort, Hardware::ptsSelectPin), 1);
 
 	return ILPS22QS::Return_t::OK;
