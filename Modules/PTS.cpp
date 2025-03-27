@@ -32,7 +32,7 @@
 /**
  * @addtogroup PTS 
  * 
- * Pressure Temperature Sensor module.
+ * Pressure Temperature Sensor module for ILPS22QS sensor.
  * @{
  */
 
