@@ -35,7 +35,8 @@
 /**
  * @addtogroup TWI 
  * 
- * TWI0 module with basic functions.
+ * \c TWI0 module with basic functions.
+ * @{
  */
 
 // ----- STATIC FUNCTION DECLARATIONS
