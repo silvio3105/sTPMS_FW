@@ -14,6 +14,9 @@
 #include			"TWI.hpp"
 
 #include			"nrf.h"
+#include			"nrf_clock.h"
+#include			"nrf_power.h"
+#include			"nrf_rtc.h"
 #include			"nrf_nvic.h"
 #include 			"app_error.h"
 #include 			"nrf_soc.h"
@@ -23,7 +26,7 @@
 /**
  * @addtogroup System
  * 
- * System module.
+ * System module. Configures clocks, power, watchdog and \c RTC2 for wakeup.
  * @{
  */
 
@@ -79,11 +82,8 @@ namespace System
 			return Return_t::NOK;
 		}
 
-		// Enable compare0 interrupt
-		NRF_RTC2->INTENSET = (1 << 16);
-
-		// Set counter resolution of 125ms
-		NRF_RTC2->PRESCALER = 4095;
+		nrf_rtc_int_enable(NRF_RTC2, NRF_RTC_INT_COMPARE0_MASK);
+		nrf_rtc_prescaler_set(NRF_RTC2, 4095); // 125ms resolution
 
 		return Return_t::OK;
 	}
@@ -95,9 +95,10 @@ namespace System
 	 */
 	void startWakeupTimer(void)
 	{
-		NRF_RTC2->TASKS_CLEAR = 1;
-		NRF_RTC2->CC[0] = (AppConfig::measurePeriod * 1000) / 125;
-		NRF_RTC2->TASKS_START = 1;
+		nrf_rtc_task_trigger(NRF_RTC2, NRF_RTC_TASK_CLEAR);
+		nrf_rtc_cc_set(NRF_RTC2, 0, ((AppConfig::measurePeriod * 1000) / 125));
+		nrf_rtc_task_trigger(NRF_RTC2, NRF_RTC_TASK_START);
+
 		_PRINT_INFO("Wakeup timer started\n");
 	}
 
@@ -133,6 +134,7 @@ namespace System
 
 		_PRINT("Sleep\n");
 		sd_app_evt_wait();
+		_PRINT("Sleep done\n");
 
 		TWI::init();
 	}
@@ -178,7 +180,7 @@ namespace System
  */
 static inline void stopWakeupTimer(void)
 {
-	NRF_RTC2->TASKS_STOP = 1;
+	nrf_rtc_task_trigger(NRF_RTC2, NRF_RTC_TASK_STOP);
 }
 
 /**
@@ -190,21 +192,27 @@ static inline void testXTAL(void)
 {
 	// Test crystals only in debug build
 	#ifdef DEBUG
+
 	_PRINT("Wait for HFXO\n");
-	NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-	NRF_CLOCK->TASKS_HFCLKSTART = 1;
-	while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
-	NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;	
-	NRF_CLOCK->TASKS_HFCLKSTOP = 1;
+	nrf_clock_event_clear(NRF_CLOCK_EVENT_HFCLKSTARTED);
+	nrf_clock_task_trigger(NRF_CLOCK_TASK_HFCLKSTART);
+
+	while (!nrf_clock_event_check(NRF_CLOCK_EVENT_HFCLKSTARTED));
+
+	nrf_clock_event_clear(NRF_CLOCK_EVENT_HFCLKSTARTED);
+	nrf_clock_task_trigger(NRF_CLOCK_TASK_HFCLKSTOP);
 	_PRINT("HFXO works\n");
 
 	_PRINT("Wait for LFXO\n");
-	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
-	NRF_CLOCK->TASKS_LFCLKSTART = 1;
-	while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0);
-	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
-	NRF_CLOCK->TASKS_LFCLKSTOP = 1;
+	nrf_clock_event_clear(NRF_CLOCK_EVENT_LFCLKSTARTED);
+	nrf_clock_task_trigger(NRF_CLOCK_TASK_LFCLKSTART);
+
+	while (!nrf_clock_event_check(NRF_CLOCK_EVENT_LFCLKSTARTED));
+
+	nrf_clock_event_clear(NRF_CLOCK_EVENT_LFCLKSTARTED);
+	nrf_clock_task_trigger(NRF_CLOCK_TASK_LFCLKSTOP);
 	_PRINT("LFXO works\n");		
+
 	#endif // DEBUG
 }
 
@@ -215,8 +223,8 @@ static inline void testXTAL(void)
  */
 static inline void setResetReason(void)
 {
-	uint32_t tmp = NRF_POWER->RESETREAS;
-	NRF_POWER->RESETREAS = 0;
+	uint32_t tmp = nrf_power_resetreas_get();
+	nrf_power_resetreas_clear(0xFFFFFFFF);
 
 	// Check HW reset reasons if custom one is not set
 	if (Data::eeprom->rstReason == System::Reset_t::Unknown)
@@ -263,8 +271,8 @@ static inline void setResetReason(void)
  */
 static inline void powerInit(void)
 {
-	NRF_POWER->POFCON = 0;
-	NRF_POWER->DCDCEN = 1;
+	nrf_power_dcdcen_set(1);
+	nrf_power_pofcon_set(0, NRF_POWER_POFTHR_V21);
 }
 
 /**
@@ -274,13 +282,15 @@ static inline void powerInit(void)
  */
 static inline void watchdogInit(void)
 {
-	NRF_WDT->CRV = (AppConfig::wdtTimeout * 32768) - 1;
+	nrf_wdt_reload_value_set((AppConfig::wdtTimeout * 32768) - 1);
+	
 	#ifdef DEBUG
-	NRF_WDT->CONFIG = 1;
+	nrf_wdt_behaviour_set(NRF_WDT_BEHAVIOUR_RUN_SLEEP_HALT);
 	#else
-	NRF_WDT->CONFIG = 9;
+	nrf_wdt_behaviour_set(NRF_WDT_BEHAVIOUR_RUN_SLEEP);
 	#endif // DEBUG
-	NRF_WDT->TASKS_START = 1;
+
+	nrf_wdt_task_trigger(NRF_WDT_TASK_START);
 }
 
 
@@ -297,13 +307,12 @@ extern "C"
 		_PRINT("RTC2 IRQ\n");
 		sd_nvic_ClearPendingIRQ(RTC2_IRQn);
 
-		if (NRF_RTC2->EVENTS_COMPARE[0])
+		if (nrf_rtc_event_pending(NRF_RTC2, NRF_RTC_EVENT_COMPARE_0))
 		{
-			NRF_RTC2->EVENTS_COMPARE[0] = 0;
+			nrf_rtc_event_clear(NRF_RTC2, NRF_RTC_EVENT_COMPARE_0);
+			stopWakeupTimer();
 
 			wakeup = 1;
-			stopWakeupTimer();
-			
 			_PRINT_INFO("Wakeup\n");
 			
 		}

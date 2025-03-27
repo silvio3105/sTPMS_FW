@@ -29,6 +29,7 @@
 #include			"Main.hpp"
 
 #include			"nrf.h"
+#include			"nrf_wdt.h"
 
 
 // ----- NAMESPACES
@@ -92,7 +93,7 @@ namespace System
 	 */
 	inline void feedWatchdog(void)
 	{
-		NRF_WDT->RR[0] = 0x6E524635;
+		nrf_wdt_reload_request_set(NRF_WDT_RR0);
 	}
 };
 
