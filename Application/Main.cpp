@@ -128,8 +128,6 @@ int main(void)
 	}
 	
 	ledOff();
-	_PRINTF("Reset reason %u\n", System::getResetReason());
-
 	while (1)
 	{
 		switch (state)
