@@ -157,6 +157,7 @@ int main(void)
 				{
 					if (ledMeasureCount < AppConfig::ledBlinkCount + 1) // + 1 because device will do first measure right after powerup
 					{
+						measureBattery = 1;
 						ledOn();
 					}
 				}
