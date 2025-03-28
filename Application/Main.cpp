@@ -65,6 +65,7 @@ static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data object. */
 static State_t state = State_t::Measure; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
+static uint8_t measureBattery = 0; /**< @brief Flag for measure battery with ADC. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -134,7 +135,22 @@ int main(void)
 		{
 			case State_t::Measure:
 			{
-				_PRINT_INFO("--- MEASURE\n");
+				// Measure battery every time in debug buiild
+				#ifdef DEBUG
+				measureBattery = 1;
+				#endif // DEBUG
+
+				// Increase working seconds and uptime if needed
+				Data::eeprom->workingSeconds += AppConfig::measurePeriod;
+				if (Data::eeprom->workingSeconds >= 3600)
+				{
+					Data::eeprom->workingSeconds = 0;
+					data.increaseUptime();
+					measureBattery = 1;
+					_PRINT_INFO("Uptime++\n");
+				}
+
+				_PRINT_INFO("--- MEASURE\n");		
 
 				// Turn on the LED
 				if (System::getResetReason() == System::Reset_t::Powerup)
@@ -145,10 +161,11 @@ int main(void)
 					}
 				}
 
-				// Measure voltage
-				ADC::measure();
-				while (ADC::isDone() != Return_t::OK);
-				data.setVoltage(ADC::getVoltage());
+				// Start battery measurment
+				if (measureBattery)
+				{
+					ADC::measure();			
+				}
 
 				// Measure PTS
 				if (PTS::measure() == Return_t::OK)
@@ -160,6 +177,14 @@ int main(void)
 				{
 					data.setPressure(0);
 					data.setTemperature(0);
+				}
+
+				// Check if ADC is done with battery measurment
+				if (measureBattery)
+				{
+					measureBattery = 0;
+					while (ADC::isDone() != Return_t::OK);
+					data.setVoltage(ADC::getVoltage());	
 				}
 
 				// Turn off the LED
@@ -175,15 +200,6 @@ int main(void)
 						ledOff();
 						ledMeasureCount++;
 					}
-				}		
-
-				// Increase working seconds and uptime if needed
-				Data::eeprom->workingSeconds += AppConfig::measurePeriod;
-				if (Data::eeprom->workingSeconds >= 3600)
-				{
-					Data::eeprom->workingSeconds = 0;
-					data.increaseUptime();
-					_PRINT_INFO("Uptime++\n");
 				}
 
 				state = State_t::Advertise;
