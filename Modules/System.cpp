@@ -227,7 +227,8 @@ static inline void setResetReason(void)
 	nrf_power_resetreas_clear(0xFFFFFFFF);
 
 	// Check HW reset reasons if custom one is not set
-	if (Data::eeprom->rstReason == System::Reset_t::Unknown)
+	if (Data::eeprom->rstReason == System::Reset_t::Unknown ||
+		Data::eeprom->inited != Data::Init_t::Inited)
 	{
 		if (tmp & (1 << 0))
 		{
@@ -251,7 +252,14 @@ static inline void setResetReason(void)
 		}
 		else
 		{
-			resetReason = System::Reset_t::Unexpected;
+			if (Data::eeprom->inited == Data::Init_t::Inited)
+			{
+				resetReason = System::Reset_t::Unexpected;
+			}
+			else
+			{
+				resetReason = System::Reset_t::Powerup;
+			}
 		}					
 	}
 	else

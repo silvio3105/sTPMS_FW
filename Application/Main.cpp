@@ -130,6 +130,7 @@ int main(void)
 		// SOON: Raise error
 	}
 	
+	data.setReset(System::getResetReason(), Data::eeprom->rstCount);
 	ledOff();
 	while (1)
 	{
