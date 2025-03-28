@@ -66,6 +66,7 @@ static State_t state = State_t::Measure; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
 static uint8_t measureBattery = 0; /**< @brief Flag for measure battery with ADC. */
+static uint8_t adcNotInited = 0; /**< @brief Flag for not inited ADC. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -124,6 +125,7 @@ int main(void)
 
 	if (ADC::init() != Return_t::OK)
 	{
+		adcNotInited = 1;
 		_PRINT_ERROR("ADC init fail\n");
 		// SOON: Raise error
 	}
@@ -165,7 +167,14 @@ int main(void)
 				// Start battery measurment
 				if (measureBattery)
 				{
-					ADC::measure();			
+					if (!adcNotInited)
+					{
+						ADC::measure();	
+					}
+					else // ADC is not inited
+					{
+						measureBattery = 0;
+					}	
 				}
 
 				// Measure PTS
@@ -178,6 +187,7 @@ int main(void)
 				{
 					data.setPressure(0);
 					data.setTemperature(0);
+					// SOON: Add error flag
 				}
 
 				// Check if ADC is done with battery measurment
@@ -193,6 +203,7 @@ int main(void)
 				{
 					if (ledMeasureCount < AppConfig::ledBlinkCount + 1) // + 1 because device will do first measure right after powerup
 					{
+						// Small delay
 						for (uint32_t i = 0; i < 0xFFF; i++)
 						{
 							(void)i;
