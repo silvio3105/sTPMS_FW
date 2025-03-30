@@ -262,10 +262,14 @@ static inline void setResetReason(void)
 			}
 		}					
 	}
-	else
+	else if (Data::eeprom->rstReason != System::Reset_t::Unknown)
 	{
 		resetReason = Data::eeprom->rstReason;
 	}
+	else
+	{
+		resetReason = System::Reset_t::Unexpected;
+	}	
 
 	// Reset reset reason in SRAM EEPROM
 	Data::eeprom->rstReason = System::Reset_t::Unknown;
