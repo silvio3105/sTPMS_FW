@@ -195,8 +195,18 @@ namespace Data
 		 */			
 		inline void setErrorCode(const System::Error_t code)
 		{
-			errorCode = code;
+			errorCode = (System::Error_t)((uint8_t)errorCode | (uint8_t)code);
 		}	
+
+		/**
+		 * @brief Clear active errors.
+		 * 
+		 * @return No return value.
+		 */
+		inline void clearErrorCode(void)
+		{
+			errorCode = System::Error_t::None;
+		}
 		
 		/**
 		 * @brief Set device firmware version.

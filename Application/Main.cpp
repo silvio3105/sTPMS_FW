@@ -61,12 +61,13 @@ enum class State_t : uint8_t
 
 
 // ----- VARIABLES
-static Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data object. */
+Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data object. */
 static State_t state = State_t::Measure; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
 static uint8_t measureBattery = 0; /**< @brief Flag for measure battery with ADC. */
 static uint8_t adcNotInited = 0; /**< @brief Flag for not inited ADC. */
+static uint8_t advFailCnt = 0; /**< @brief BLE advertise fail counter. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -126,8 +127,8 @@ int main(void)
 	if (ADC::init() != Return_t::OK)
 	{
 		adcNotInited = 1;
+		data.setErrorCode(System::Error_t::ADCInit);
 		_PRINT_ERROR("ADC init fail\n");
-		// SOON: Raise error
 	}
 	
 	data.setReset(System::getResetReason(), Data::eeprom->rstCount);
@@ -142,6 +143,21 @@ int main(void)
 				#ifdef DEBUG
 				measureBattery = 1;
 				#endif // DEBUG
+
+				// Try to init ADC if init failed on startup
+				if (adcNotInited)
+				{
+					if (ADC::init() != Return_t::OK)
+					{
+						adcNotInited = 1;
+						data.setErrorCode(System::Error_t::ADCInit);
+						_PRINT_ERROR("ADC init fail\n");
+					}
+					else
+					{
+						adcNotInited = 0;
+					}
+				}
 
 				// Increase working seconds and uptime if needed
 				Data::eeprom->workingSeconds += AppConfig::measurePeriod;
@@ -188,7 +204,6 @@ int main(void)
 				{
 					data.setPressure(0);
 					data.setTemperature(0);
-					// SOON: Add error flag
 				}
 
 				// Check if ADC is done with battery measurment
@@ -230,7 +245,12 @@ int main(void)
 				}
 				else
 				{
-					// SOON: Add error
+					advFailCnt++;
+					if (advFailCnt > AppConfig::advMaxFails)
+					{
+						_PRINT_ERROR("BLE advertise fail reset\n");
+						System::reset(System::Reset_t::AdvFail);
+					}
 				}
 
 				// Feed the dog

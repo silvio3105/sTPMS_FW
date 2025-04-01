@@ -29,6 +29,7 @@
 #include			"AppConfig.hpp"
 #include 			"TPMS1.hpp"
 #include			"sDebug.hpp"
+#include			"Data.hpp"
 
 #include			<stdint.h>
 
@@ -86,6 +87,7 @@ enum class Return_t : uint8_t
 
 
 // ----- EXTERNS
+extern Data::sTPMS data;
 
 
 // ----- DEBUG

@@ -26,6 +26,7 @@
 #include			"PTS.hpp"
 #include			"TWI.hpp"
 #include 			"ILPS22QS.hpp"
+#include			"System.hpp"
 
 #include			"nrf_gpio.h"
 
@@ -119,7 +120,7 @@ namespace PTS
 	{
 		if (Sensor.measure() != ILPS22QS::Return_t::OK)
 		{
-			// SOON: Add error code
+			data.setErrorCode(System::Error_t::MeasureFail);
 			_PRINT_ERROR("Measure start fail\n");
 			return Return_t::NOK;
 		}
@@ -129,7 +130,7 @@ namespace PTS
 		{
 			if (Sensor.getDataStatus(status) != ILPS22QS::Return_t::OK)
 			{
-				// SOON: Add error code
+				data.setErrorCode(System::Error_t::MeasureStatus);
 				_PRINT_ERROR("Measure status fail\n");
 				return Return_t::NOK;
 			}
@@ -161,7 +162,7 @@ namespace PTS
 				
 				if (fail)
 				{
-					// SOON: Add error code for partial measurment
+					data.setErrorCode(System::Error_t::PartialData);
 				}
 
 				break;

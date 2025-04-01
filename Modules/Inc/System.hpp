@@ -44,6 +44,10 @@ namespace System
 	enum class Error_t : uint8_t
 	{
 		None = 0, /**< @brief No active error. */
+		ADCInit = (1 << 0),
+		MeasureFail = (1 << 1),
+		MeasureStatus = (1 << 2),
+		PartialData = (1 << 3),
 	};
 
 	/**
@@ -71,6 +75,7 @@ namespace System
 		BLEInit = 22, /**< @brief Reset reason for failed BLE init. */
 		PTSInit = 23, /**< @brief Reset reason for failed sensor init. */
 		TWIInit = 24, /**< @brief Reset reason for failed TWI init. */
+		AdvFail = 25, /**< @brief Reset reason for too much BLE advertise fails. */
 	};
 
 	

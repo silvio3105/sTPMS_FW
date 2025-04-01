@@ -63,6 +63,7 @@ namespace AppConfig
 	static constexpr char deviceName[] = "sTPMS1"; /**< @brief Bluetooth device name. */
 	static constexpr int8_t advTXPower = 4; /**< @brief Bluetooth TX power for advertising role(-40, -20, -16, -12, -8, -4, 0, or 4dBm). */
 	static constexpr uint8_t advCount = 1; /**< @brief Number of advertisment events before stopping advertise. */
+	static constexpr uint8_t advMaxFails = 2; /**< @brief Maximum number of BLE advertise fails. */
 	static constexpr uint8_t bleTag = 1; /**< @brief Bluetooth connection tag. */
 	static constexpr Hardware_t hwID = Hardware_t::sTPMS1; /**< @brief sTPMS hardware ID. */
 	static constexpr uint8_t rttChannel = 0; /**< @brief RTT channel ID for debug output. */
