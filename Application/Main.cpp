@@ -239,11 +239,7 @@ int main(void)
 				_PRINT_INFO("--- ADVERTISE\n");
 
 				// Advertise sTPMS data
-				if (BLE::advertise(&sTPMSData, sizeof(sTPMSData)) == Return_t::OK)
-				{
-					while (BLE::isAdvertiseDone() != Return_t::OK);	
-				}
-				else
+				if (BLE::advertise(&sTPMSData, sizeof(sTPMSData)) != Return_t::OK)
 				{
 					advFailCnt++;
 					if (advFailCnt > AppConfig::advMaxFails)
