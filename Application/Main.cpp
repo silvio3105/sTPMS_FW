@@ -274,6 +274,7 @@ int main(void)
 				{
 					wakeupSet = 0;
 					state = State_t::Measure;
+					sTPMSData.clearErrorCode();
 				}					
 				break;
 			}
