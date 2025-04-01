@@ -68,9 +68,9 @@ namespace AppConfig
 	static constexpr Hardware_t hwID = Hardware_t::sTPMS1; /**< @brief sTPMS hardware ID. */
 	static constexpr uint8_t rttChannel = 0; /**< @brief RTT channel ID for debug output. */
 	#ifdef DEBUG
-	static constexpr uint16_t measurePeriod = 15; /**< @brief Measure period in seconds for debug build. */
+	static constexpr uint16_t measurePeriod = 5; /**< @brief Measure period in seconds for debug build. */
 	#else
-	static constexpr uint16_t measurePeriod = 60; /**< @brief Measure period in seconds for release build. */
+	static constexpr uint16_t measurePeriod = 30; /**< @brief Measure period in seconds for release build. */
 	#endif // DEBUG
 	static constexpr uint8_t wdtTimeout = measurePeriod + 4; /**< @brief Watchdog timer timeout in seconds. */
 	static constexpr uint16_t bleMnfID = 0x3105; /**< @brief Manufacturer ID in BLE advertise packet. */
