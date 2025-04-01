@@ -20,6 +20,8 @@
 				"S132",
 				"NRF_SD_BLE_API_VERSION=7",
 				"NRF_BLE_GATT_ENABLED",
+				"NRF_LOG_BACKEND_RTT_ENABLED=1",
+				"NRF_LOG_ENABLED=1",
 				"DEBUG",
 				"DEBUG_VERBOSE",
 				"DEBUG_INFO",
@@ -40,7 +42,41 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true
             }
-        }
+        },
+
+        {
+            "name": "sTPMS FW",
+            "includePath": [
+				"${workspaceFolder}/Hardware/TPMS1/**",
+				"${workspaceFolder}/Hardware/TPMS1/Inc/**",
+                "${workspaceFolder}/Application/Inc/**",
+				"${workspaceFolder}/CMSIS/**",
+				"${workspaceFolder}/Config/**",
+				"${workspaceFolder}/Drivers/Inc/**",
+				"${workspaceFolder}/Libraries/Inc/**",
+				"${workspaceFolder}/Modules/Inc/**",
+            ],
+            "defines": [
+				"BUILD_sTPMS_FW",
+				"HW_sTPMS1",
+				"NRF52832_XXAA",
+				"SOFTDEVICE_PRESENT",
+				"S132",
+				"NRF_SD_BLE_API_VERSION=7",
+				"NRF_BLE_GATT_ENABLED",
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "${env:ARM-GCC}/arm-none-eabi-gcc.exe",
+            "compilerArgs": [
+                "-mcpu=cortex-m3",
+                "-mthumb"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }		
     ],
     "version": 4
 }
