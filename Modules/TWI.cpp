@@ -80,7 +80,7 @@ namespace TWI
 		}
 
 		// Set TWI speed to 100kHz
-		nrf_twim_frequency_set(NRF_TWIM0, NRF_TWIM_FREQ_100K);
+		nrf_twim_frequency_set(NRF_TWIM0, NRF_TWIM_FREQ_400K);
 
 		nrf_twim_int_enable(NRF_TWIM0, NRF_TWIM_INT_ERROR_MASK);
 
