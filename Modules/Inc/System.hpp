@@ -37,22 +37,9 @@ namespace System
 {
 	// ----- ENUMS
 	/**
-	 * @brief Enum class for errors.
-	 * 
-	 * \ingroup System
-	 */
-	enum class Error_t : uint8_t
-	{
-		None = 0, /**< @brief No active error. */
-		ADCInit = (1 << 0),
-		MeasureFail = (1 << 1),
-		MeasureStatus = (1 << 2),
-		PartialData = (1 << 3),
-	};
-
-	/**
 	 * @brief Enum class with reset reasons.
 	 * 
+	 * \ingroup System
 	 */
 	enum class Reset_t : uint8_t
 	{

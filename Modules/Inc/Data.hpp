@@ -58,6 +58,19 @@ namespace Data
 		Inited = 0x31053105 /**< @brief Inited SRAM EEPROM flag value. */
 	};
 
+	/**
+	 * @brief Enum class for errors.
+	 * 
+	 */
+	enum class Error_t : uint8_t
+	{
+		None = 0, /**< @brief No active error. */
+		ADCInit = (1 << 0),
+		MeasureFail = (1 << 1),
+		MeasureStatus = (1 << 2),
+		PartialData = (1 << 3),
+	};	
+
 
 	// ----- STRUCTS
 	/**
@@ -193,9 +206,9 @@ namespace Data
 		 * 
 		 * @return No return value.
 		 */			
-		inline void setErrorCode(const System::Error_t code)
+		inline void setErrorCode(const Error_t code)
 		{
-			errorCode = (System::Error_t)((uint8_t)errorCode | (uint8_t)code);
+			errorCode = (Error_t)((uint8_t)errorCode | (uint8_t)code);
 		}	
 
 		/**
@@ -205,7 +218,7 @@ namespace Data
 		 */
 		inline void clearErrorCode(void)
 		{
-			errorCode = System::Error_t::None;
+			errorCode = Error_t::None;
 		}
 		
 		/**
@@ -270,7 +283,7 @@ namespace Data
 
 		uint16_t uptime; /**< @brief Device uptime in hours. */
 		uint8_t voltage; /**< @brief Battery voltage in centivolts. Offset: 200cV. */
-		System::Error_t errorCode; /**< @brief Last error code. See \ref System::Error_t. */
+		Error_t errorCode; /**< @brief Last error code. See \ref Error_t. */
 
 		uint8_t fwVer[3]; /**< @brief Firmware version - major, minor, build. */
 		System::Reset_t rstReason; /**< @brief Reset reason. See \ref System::Reset_t. */
@@ -325,7 +338,7 @@ namespace Data
 		data.setTemperature(eeprom->lastTemperature);
 		data.setUptime(eeprom->uptime);
 		data.setVoltage(eeprom->lastVoltage);
-		data.setErrorCode(System::Error_t::None);
+		data.clearErrorCode();
 		data.setFirmwareVersion(major, minor, build);
 		data.setConfig(AppConfig::hwID, AppConfig::measurePeriod);
 	}

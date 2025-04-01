@@ -27,6 +27,7 @@
 #include			"TWI.hpp"
 #include 			"ILPS22QS.hpp"
 #include			"System.hpp"
+#include			"Data.hpp"
 
 #include			"nrf_gpio.h"
 
@@ -47,6 +48,10 @@ ILPS22QS::Return_t msp(void);
 ILPS22QS::I2C Sensor = ILPS22QS::I2C(read, write, msp, msp); /**< @brief ILPS22QS object. */
 static uint16_t pressure = 0; /**< @brief Measured pressure in mbar. */
 static int16_t temperature = 0; /**< @brief Measured temperature in centi degrees Celsius. */
+
+
+// ----- EXTERNS
+extern Data::sTPMS sTPMSData;
 
 
 // ----- NAMESPACES
@@ -120,7 +125,7 @@ namespace PTS
 	{
 		if (Sensor.measure() != ILPS22QS::Return_t::OK)
 		{
-			data.setErrorCode(System::Error_t::MeasureFail);
+			sTPMSData.setErrorCode(Data::Error_t::MeasureFail);
 			_PRINT_ERROR("Measure start fail\n");
 			return Return_t::NOK;
 		}
@@ -130,7 +135,7 @@ namespace PTS
 		{
 			if (Sensor.getDataStatus(status) != ILPS22QS::Return_t::OK)
 			{
-				data.setErrorCode(System::Error_t::MeasureStatus);
+				sTPMSData.setErrorCode(Data::Error_t::MeasureStatus);
 				_PRINT_ERROR("Measure status fail\n");
 				return Return_t::NOK;
 			}
@@ -162,7 +167,7 @@ namespace PTS
 				
 				if (fail)
 				{
-					data.setErrorCode(System::Error_t::PartialData);
+					sTPMSData.setErrorCode(Data::Error_t::PartialData);
 				}
 
 				break;

@@ -61,7 +61,7 @@ enum class State_t : uint8_t
 
 
 // ----- VARIABLES
-Data::sTPMS data = Data::sTPMS(); /**< @brief sTPMS data object. */
+Data::sTPMS sTPMSData = Data::sTPMS(); /**< @brief sTPMS data object. */
 static State_t state = State_t::Measure; /**< @brief Application state. */
 static uint8_t wakeupSet = 0; /**< @brief Wakeup timer flag. If set to \c 1 wakeup timer has started. */
 static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
@@ -96,7 +96,7 @@ int main(void)
 	ledOn();
 
 	// Init device data and SRAM EEPROM
-	Data::init(data);
+	Data::init(sTPMSData);
 
 	// Init system
 	if (System::init() != Return_t::OK)
@@ -127,11 +127,11 @@ int main(void)
 	if (ADC::init() != Return_t::OK)
 	{
 		adcNotInited = 1;
-		data.setErrorCode(System::Error_t::ADCInit);
+		sTPMSData.setErrorCode(Data::Error_t::ADCInit);
 		_PRINT_ERROR("ADC init fail\n");
 	}
 	
-	data.setReset(System::getResetReason(), Data::eeprom->rstCount);
+	sTPMSData.setReset(System::getResetReason(), Data::eeprom->rstCount);
 	ledOff();
 	while (1)
 	{
@@ -150,7 +150,7 @@ int main(void)
 					if (ADC::init() != Return_t::OK)
 					{
 						adcNotInited = 1;
-						data.setErrorCode(System::Error_t::ADCInit);
+						sTPMSData.setErrorCode(Data::Error_t::ADCInit);
 						_PRINT_ERROR("ADC init fail\n");
 					}
 					else
@@ -164,7 +164,7 @@ int main(void)
 				if (Data::eeprom->workingSeconds >= 3600)
 				{
 					Data::eeprom->workingSeconds = 0;
-					data.increaseUptime();
+					sTPMSData.increaseUptime();
 					measureBattery = 1;
 					_PRINT_INFO("Uptime++\n");
 				}
@@ -197,13 +197,13 @@ int main(void)
 				// Measure PTS
 				if (PTS::measure() == Return_t::OK)
 				{
-					data.setPressure(PTS::getPressure());
-					data.setTemperature(PTS::getTemperature());
+					sTPMSData.setPressure(PTS::getPressure());
+					sTPMSData.setTemperature(PTS::getTemperature());
 				}
 				else
 				{
-					data.setPressure(0);
-					data.setTemperature(0);
+					sTPMSData.setPressure(0);
+					sTPMSData.setTemperature(0);
 				}
 
 				// Check if ADC is done with battery measurment
@@ -211,7 +211,7 @@ int main(void)
 				{
 					measureBattery = 0;
 					while (ADC::isDone() != Return_t::OK);
-					data.setVoltage(ADC::getVoltage());	
+					sTPMSData.setVoltage(ADC::getVoltage());	
 				}
 
 				// Turn off the LED
@@ -239,7 +239,7 @@ int main(void)
 				_PRINT_INFO("--- ADVERTISE\n");
 
 				// Advertise sTPMS data
-				if (BLE::advertise(&data, sizeof(data)) == Return_t::OK)
+				if (BLE::advertise(&sTPMSData, sizeof(sTPMSData)) == Return_t::OK)
 				{
 					while (BLE::isAdvertiseDone() != Return_t::OK);	
 				}
