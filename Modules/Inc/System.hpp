@@ -68,7 +68,7 @@ namespace System
 	
 	// ----- FUNCTION DECLARATION
 	Return_t init(void);
-	void startWakeupTimer(void);
+	void startWakeupTimer(const uint8_t period);
 	Return_t isWoken(void);
 	void sleep(void);
 	Reset_t getResetReason(void);

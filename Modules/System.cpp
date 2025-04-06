@@ -93,10 +93,10 @@ namespace System
 	 * 
 	 * @return No return value.
 	 */
-	void startWakeupTimer(void)
+	void startWakeupTimer(const uint8_t period)
 	{
 		nrf_rtc_task_trigger(NRF_RTC2, NRF_RTC_TASK_CLEAR);
-		nrf_rtc_cc_set(NRF_RTC2, 0, ((AppConfig::measurePeriod * 1000) / 125));
+		nrf_rtc_cc_set(NRF_RTC2, 0, ((period * 1000) / 125));
 		nrf_rtc_task_trigger(NRF_RTC2, NRF_RTC_TASK_START);
 
 		_PRINT_INFO("Wakeup timer started\n");
