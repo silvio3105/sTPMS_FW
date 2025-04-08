@@ -68,9 +68,6 @@ static uint8_t ledMeasureCount = 0; /**< @brief Measure counter for LED. */
 static uint8_t measureBattery = 0; /**< @brief Flag for measure battery with ADC. */
 static uint8_t adcNotInited = 0; /**< @brief Flag for not inited ADC. */
 static uint8_t advFailCnt = 0; /**< @brief BLE advertise fail counter. */
-static uint8_t advOnly = 0; /**< @brief Flag to set state to advertise after wakeup.  */
-static uint8_t advMeasureCount = 0; /**< @brief Measure counter before setting \ref advOnly flag. */
-static uint8_t sleepTime = 0; /**< @brief Sleep duration in seconds. */
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -223,7 +220,6 @@ int main(void)
 					}
 				}
 
-				advMeasureCount++;
 				state = State_t::Advertise;
 				break;
 			}
@@ -256,21 +252,8 @@ int main(void)
 				// Start wakeup timer if needed
 				if (!wakeupSet)
 				{
-					if (!advOnly &&
-						advMeasureCount > 2)
-					{
-						sleepTime = 5;
-						advOnly = 1;
-						advMeasureCount = 0;
-					}
-					else
-					{
-						sleepTime = AppConfig::measurePeriod;
-						advOnly = 0;
-					}
-
 					wakeupSet = 1;
-					System::startWakeupTimer(sleepTime);
+					System::startWakeupTimer(AppConfig::measurePeriod);
 				}
 
 				// Put device to sleep
@@ -280,18 +263,11 @@ int main(void)
 				if (System::isWoken() == Return_t::OK)
 				{
 					wakeupSet = 0;
-					if (advOnly)
-					{
-						state = State_t::Advertise;
-					}
-					else
-					{
-						state = State_t::Measure;
-					}
+					state = State_t::Measure;
 					sTPMSData.clearErrorCode();
 
 					// Increase working seconds and uptime if needed
-					Data::eeprom->workingSeconds += sleepTime;
+					Data::eeprom->workingSeconds += AppConfig::measurePeriod;
 					if (Data::eeprom->workingSeconds >= 3600)
 					{
 						Data::eeprom->workingSeconds = 0;
